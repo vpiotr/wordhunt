@@ -1,4 +1,4 @@
-package com.sample;
+package wordhunt;
 
 import static org.junit.Assert.assertTrue;
 
