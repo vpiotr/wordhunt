@@ -56,12 +56,6 @@ System requirements
 --------------------
 This tool has been prepared using Oracle Java 1.8 and can be used on any platform supporting this Java version.
 Additional shell scripts are prepared to be used on Linux Mint 18.
-  
-Third party content
---------------------
-This project contains for test purposes eBook "Frankenstein" by Mary Wollstonecraft (Godwin) Shelley from Project Gutenberg.
-This is a free eBook which you can download at no cost from:
-  https://www.gutenberg.org/ebooks/41445
 
 Licensing
 --------------------
