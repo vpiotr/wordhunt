@@ -24,6 +24,9 @@ public class MimeConst {
 
     public final static String PLAIN_TEXT = "text/plain";
     public final static String TEXT_PREFIX = "text/";
+    public static final String JSON_TYPE = "application/json";
+    public static final String XML_TYPE = "application/xml";
+    public static final String PDF_TYPE = "application/pdf";
 
     private MimeConst() {
     }

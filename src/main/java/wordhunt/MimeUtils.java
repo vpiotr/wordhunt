@@ -23,7 +23,11 @@ package wordhunt;
 public class MimeUtils {
 
     public static boolean isTextType(String mimeType) {
-        return mimeType.startsWith(MimeConst.TEXT_PREFIX);
+        return mimeType != null && (
+                mimeType.startsWith(MimeConst.TEXT_PREFIX)
+                || mimeType.equals(MimeConst.JSON_TYPE)
+                || mimeType.equals(MimeConst.XML_TYPE)
+        );
     }
 
     private MimeUtils() {
