@@ -156,7 +156,7 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
 
     private String buildEntryAbsolutePath(String filePath) {
         String rootPath = getSearchRootDir();
-        return FileUtils.toAbsolutePath(rootPath, filePath);
+        return FilePathUtils.toAbsolutePath(rootPath, filePath);
     }
 
     private boolean hasAllWords(BufferedReader in, String[] words) throws IOException {

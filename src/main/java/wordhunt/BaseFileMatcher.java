@@ -70,7 +70,7 @@ public class BaseFileMatcher {
     @SuppressWarnings("unchecked")
     protected boolean isIgnoredFile(String filePath, SearchContext context) {
         Set<String> filesToIgnore = (Set<String>) context.getValue(CTX_FILES_TO_IGNORE);
-        String absPath = FileUtils.toCanonicalPath(getSearchRootDir(), filePath);
+        String absPath = FilePathUtils.toCanonicalPath(getSearchRootDir(), filePath);
         return filesToIgnore.contains(absPath);
     }
 

@@ -90,7 +90,7 @@ public class BasicIndexSearcher implements IndexSearcher {
         if (Boolean.TRUE.equals(matcher.isMatching(entry, context, null))) {
             consumer.handle(
                     new File(
-                            FileUtils.toCanonicalPath(
+                            FilePathUtils.toCanonicalPath(
                                     getSearchRootDir(),
                                     entry.getFilePath()
                             )

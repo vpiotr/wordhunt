@@ -154,7 +154,7 @@ class App {
     }
 
     private static void setIndexFile(SearchConfig config, String indexDir, String indexFileName) {
-        String indexPath = FileUtils.toCanonicalPath(indexDir, indexFileName);
+        String indexPath = FilePathUtils.toCanonicalPath(indexDir, indexFileName);
         setIndexFile(config, indexPath);
     }
 

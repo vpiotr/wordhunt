@@ -96,7 +96,7 @@ public class FileIndexer {
     private void buildIndex(final BufferedWriter writer) throws IOException {
         FileWalker walker = new FileWalker();
 
-        writeMeta(writer, IndexConst.META_SOURCE_PATH, FileUtils.toCanonicalPath(dirName));
+        writeMeta(writer, IndexConst.META_SOURCE_PATH, FilePathUtils.toCanonicalPath(dirName));
         final Path indexPath = Paths.get(getIndexAbsolutePath());
 
         walker.walk(dirName, new FileVisitor() {

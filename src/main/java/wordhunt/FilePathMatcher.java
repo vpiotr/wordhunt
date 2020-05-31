@@ -59,7 +59,7 @@ public class FilePathMatcher extends BaseFileMatcher implements SearchMatcher {
         matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_PATH, filePath, matchedStatus);
 
         matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_FILE,
-                FileUtils.extractFileName(filePath), matchedStatus);
+                FilePathUtils.extractFileName(filePath), matchedStatus);
 
         if (Boolean.TRUE.equals(matchedStatus) && !isIncludeDirsEnabled() && new File(filePath).isDirectory()) {
             matchedStatus = Boolean.FALSE;
