@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -jar ./target/wordhunt*.jar "$@" 
+java -jar $(dirname "$0")/target/wordhunt*.jar "$@" 

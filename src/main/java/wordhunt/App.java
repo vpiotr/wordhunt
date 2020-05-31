@@ -62,23 +62,24 @@ class App {
     private static boolean processCommand(String[] args) {
 
         String command = args[0];
+        boolean simpleMode = false;
 
         if (!command.equals("--index")
                 && !command.equals("--find")
                 && !command.equals("--help")
                 && !command.equals("--version")) {
-            return false;
+            simpleMode = true;
         }
 
         if (command.equals("--find") && args.length >= 3) {
-            validateDir(args[1]);
-            SearchConfig config = parseOptions(args, 1);
-            validateTerms(config);
-            performFind(config);
+            processFindCommand(args, false, args[1], 2);
+            return true;
+        } else if (simpleMode && args.length >= 1) {
+            processFindCommand(args, true,".", 0);
             return true;
         } else if (command.equals("--index") && args.length >= 2) {
             validateDir(args[1]);
-            SearchConfig config = parseOptions(args, 1);
+            SearchConfig config = parseOptions(args, false, args[1], 2);
             performIndex(config);
             return true;
         } else if (command.equals("--help")) {
@@ -92,18 +93,41 @@ class App {
         return false;
     }
 
-    private static SearchConfig parseOptions(String[] args, int startIndex) {
-        String dirName = args[startIndex];
+    private static void processFindCommand(String[] args, boolean simpleMode, String searchDir, int optionIndex) {
+        validateDir(searchDir);
+        SearchConfig config = parseOptions(args, simpleMode, searchDir, optionIndex);
+        validateTerms(config);
+        performFind(config);
+    }
 
+    private static SearchConfig parseOptions(String[] args, boolean simpleMode, String dirName, int startIndex) {
+        if (simpleMode) {
+            return parseSimpleOptions(args, dirName, startIndex);
+        } else {
+            return parseAdvancedOptions(args, dirName, startIndex);
+        }
+    }
+
+    private static SearchConfig parseSimpleOptions(String[] args, String dirName, int startIndex) {
         SearchConfig result = new SearchConfig();
 
-        String indexFileName = SearchConst.DEF_INDEX_FILE_NAME;
+        setupSearchRootDir(result, dirName);
+        setIndexFile(result, dirName, SearchConst.DEF_INDEX_FILE_NAME);
 
-        result.setValue(SearchConst.CFG_SEARCH_ROOT_DIR, dirName);
+        String[] anyTerms = Arrays.copyOfRange(args, startIndex, args.length);
+        anyTerms = ArrayUtils.merge(anyTerms, getTermsInConfig(result, SearchConst.CFG_SEARCH_TERMS_ANY));
+        setTermsInConfig(anyTerms, result, SearchConst.CFG_SEARCH_TERMS_ANY);
 
-        setIndexFile(result, dirName, indexFileName);
+        return result;
+    }
 
-        int i = startIndex + 1;
+    private static SearchConfig parseAdvancedOptions(String[] args, String dirName, int startIndex) {
+        SearchConfig result = new SearchConfig();
+
+        setupSearchRootDir(result, dirName);
+        setIndexFile(result, dirName, SearchConst.DEF_INDEX_FILE_NAME);
+
+        int i = startIndex;
         while (i < args.length) {
             String value = args[i];
             if ("--list".equals(value)) {
@@ -142,6 +166,10 @@ class App {
         }
 
         return result;
+    }
+
+    private static void setupSearchRootDir(SearchConfig result, String dirName) {
+        result.setValue(SearchConst.CFG_SEARCH_ROOT_DIR, dirName);
     }
 
     private static void parseIndexPath(String[] args, int index, SearchConfig config) {
@@ -305,6 +333,7 @@ class App {
             show(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
         }
 
+        // TODO: add no-index mode (search on-fly)
         IndexValidator iv = new IndexValidator(config);
         iv.checkIndex();
         SearchTerms searchTerms = buildTerms(config);
