@@ -78,4 +78,15 @@ public class FilePathUtils {
             throw new SearchException("IO error: " + ioe.getMessage(), ioe);
         }
     }
+
+    /**
+     * Convert absolute path to relative path
+     * @param absolutePath
+     * @param rootDir
+     * @return
+     */
+    public static String absoluteToRelativePath(String absolutePath, String rootDir) {
+        return new File(rootDir).toURI().relativize(new File(absolutePath).toURI()).getPath();
+    }
+
 }

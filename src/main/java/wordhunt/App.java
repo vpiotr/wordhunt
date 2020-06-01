@@ -97,7 +97,7 @@ class App {
         validateDir(searchDir);
         SearchConfig config = parseOptions(args, simpleMode, searchDir, optionIndex);
         validateTerms(config);
-        performFind(config);
+        performFind(config, simpleMode);
     }
 
     private static SearchConfig parseOptions(String[] args, boolean simpleMode, String dirName, int startIndex) {
@@ -324,7 +324,7 @@ class App {
         return result;
     }
 
-    private static void performFind(SearchConfig config) {
+    private static void performFind(SearchConfig config, boolean simpleMode) {
         String dirName = (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
         boolean list = Boolean.TRUE.equals((Boolean) config.getValue(SearchConst.CFG_SEARCH_LIST));
         String[] allTerms = getAllTerms(config);
@@ -333,14 +333,12 @@ class App {
             show(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
         }
 
-        // TODO: add no-index mode (search on-fly)
         IndexValidator iv = new IndexValidator(config);
-        iv.checkIndex();
-        SearchTerms searchTerms = buildTerms(config);
-        IndexSearcher searcher = new BasicIndexSearcher(config, new BasicIndexWalkerFactory());
-        SearchConsumer consumer = new BasicSearchConsumer(config);
-        SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config));
-        searcher.search(searchTerms, matcher, consumer);
+        if (iv.indexExists()) {
+            new SearchStrategyUsingPreparedIndex(config).invoke();
+        } else {
+            new SearchStrategyWithoutIndex(config).invoke();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -370,4 +368,35 @@ class App {
         return result;
     }
 
+    private static class SearchStrategyUsingPreparedIndex {
+        private SearchConfig config;
+
+        public SearchStrategyUsingPreparedIndex(SearchConfig config) {
+            this.config = config;
+        }
+
+        public void invoke() {
+            SearchTerms searchTerms = buildTerms(config);
+            DocumentSearcher searcher = new IndexedDocumentSearcher(config, new BasicIndexWalkerFactory());
+            SearchConsumer consumer = new BasicSearchConsumer(config);
+            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector()));
+            searcher.search(searchTerms, matcher, consumer);
+        }
+    }
+
+    private static class SearchStrategyWithoutIndex {
+        private final SearchConfig config;
+
+        private SearchStrategyWithoutIndex(SearchConfig config) {
+            this.config = config;
+        }
+
+        public void invoke() {
+            SearchTerms searchTerms = buildTerms(config);
+            OnflySearcher searcher = new OnflySearcher(config);
+            SearchConsumer consumer = new BasicSearchConsumer(config);
+            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector()));
+            searcher.search(searchTerms, matcher, consumer);
+        }
+    }
 }

@@ -27,7 +27,7 @@ public interface IndexWalker extends AutoCloseable {
      *
      * @return returns null on EOF
      */
-    IndexEntry next();
+    FoundDocument next();
 
     /**
      * Reads next meta information (if available).

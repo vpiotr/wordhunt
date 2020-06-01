@@ -38,7 +38,7 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
     }
 
     @Override
-    public IndexEntry next() {
+    public FoundDocument next() {
         String line = null;
 
         do {
@@ -90,7 +90,7 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
         return line;
     }
 
-    private IndexEntry parseEntryLine(String line) {
+    private FoundDocument parseEntryLine(String line) {
         String[] parts = line.split("\\" + IndexConst.ENTRY_FIELD_SEPARATOR);
 
         boolean isDir = (parts.length >= 1) ? parts[0].equals(IndexConst.DIR_PREFIX) : false;
@@ -98,7 +98,7 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
         String mimeType = (parts.length >= 3) ? parts[2] : "";
         String charsetName = (parts.length >= 4) ? parts[3] : "";
 
-        IndexEntry entry = new IndexEntry(relativePath, isDir, mimeType, charsetName);
+        FoundDocument entry = new FoundDocument(relativePath, isDir, mimeType, charsetName);
         return entry;
     }
 }

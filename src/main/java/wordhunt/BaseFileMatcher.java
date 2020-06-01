@@ -82,13 +82,22 @@ public class BaseFileMatcher {
         context.setValue(CTX_FILES_TO_IGNORE, filesToIgnore);
     }
 
-    protected Boolean nextMatcherResult(IndexEntry entry, SearchContext context, Boolean acceptedStatus) {
+    protected Boolean nextMatcherResult(FoundDocument entry, SearchContext context, Boolean acceptedStatus) {
         if (nextMatcher != null) {
             return nextMatcher.isMatching(entry, context, acceptedStatus);
         } else {
             return acceptedStatus;
         }
     }
+
+    protected Boolean nextMatcherResult(String absolutePath, boolean isDirectory, SearchContext context, Boolean acceptedStatus) {
+        if (nextMatcher != null) {
+            return nextMatcher.isMatching(absolutePath, isDirectory, context, acceptedStatus);
+        } else {
+            return acceptedStatus;
+        }
+    }
+
 
     protected void prepareNextMatcher(SearchTerms terms, SearchContext context) {
         if (nextMatcher != null) {

@@ -20,7 +20,7 @@ package wordhunt;
  *
  * @author piotr
  */
-public interface IndexSearcher {
+public interface DocumentSearcher {
 
     void search(SearchTerms terms, SearchMatcher matcher, SearchConsumer consumer);
 }

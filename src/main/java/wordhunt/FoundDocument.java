@@ -20,14 +20,14 @@ package wordhunt;
  *
  * @author piotr
  */
-public class IndexEntry {
+public class FoundDocument {
 
     private final String filePath;
     private final boolean isDirectory;
     private final String mimeType;
     private final String charsetName;
 
-    public IndexEntry(String filePath, boolean isDirectory, String mimeType, String charsetName) {
+    public FoundDocument(String filePath, boolean isDirectory, String mimeType, String charsetName) {
         this.filePath = filePath;
         this.isDirectory = isDirectory;
         this.mimeType = mimeType;

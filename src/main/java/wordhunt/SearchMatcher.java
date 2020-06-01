@@ -40,5 +40,17 @@ public interface SearchMatcher {
      * @return acceptedStatus if matcher could not be applied (no requirements
      * provided) or TRUE/FALSE if match has been performed.
      */
-    Boolean isMatching(IndexEntry entry, SearchContext context, Boolean acceptedStatus);
+    Boolean isMatching(FoundDocument entry, SearchContext context, Boolean acceptedStatus);
+
+    /**
+     * Checks if a given entry is matching required terms.
+     *
+     * @param absolutePath Full document path
+     * @param isDirectory true if document is a directory
+     * @param context Search context
+     * @param acceptedStatus Status of entry acceptance (input)
+     * @return acceptedStatus if matcher could not be applied (no requirements
+     * provided) or TRUE/FALSE if match has been performed.
+     */
+    Boolean isMatching(String absolutePath, boolean isDirectory, SearchContext context, Boolean acceptedStatus);
 }

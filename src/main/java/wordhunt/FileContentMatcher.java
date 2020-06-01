@@ -37,13 +37,15 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
 
     private final static String CTX_CONTENT_WORDS_ANY = "content_words_any";
     private final static String CTX_CONTENT_WORDS_CONTENT = "content_words_content";
+    private final FileTypeDetector fileTypeDetector;
 
-    public FileContentMatcher(SearchConfig config) {
-        this(config, null);
+    public FileContentMatcher(SearchConfig config, FileTypeDetector fileTypeDetector) {
+        this(config, null, fileTypeDetector);
     }
 
-    public FileContentMatcher(SearchConfig config, SearchMatcher nextMatcher) {
+    public FileContentMatcher(SearchConfig config, SearchMatcher nextMatcher, FileTypeDetector fileTypeDetector) {
         super(config, nextMatcher);
+        this.fileTypeDetector = fileTypeDetector;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
     }
 
     @Override
-    public Boolean isMatching(IndexEntry entry, SearchContext context, Boolean acceptedStatus) {
+    public Boolean isMatching(FoundDocument entry, SearchContext context, Boolean acceptedStatus) {
 
         String[] wordsForPath = getWordsFromContext(context, CTX_CONTENT_WORDS_ANY);
         String[] wordsForContent = getWordsFromContext(context, CTX_CONTENT_WORDS_CONTENT);
@@ -105,12 +107,12 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
             return matchedStatus;
         }
 
-        if (!canHandleContent(entry, context)) {
+        if (!canHandleContent(entry.getMimeType(), entry.getCharsetName())) {
             // there are some words to match but we cannot check them
             return Boolean.FALSE;
         }
 
-        boolean contentOK = hasAllWordsInFile(wordsLeftForContent, entry, absolutePath);
+        boolean contentOK = hasAllWordsInFile(wordsLeftForContent, entry.getCharsetName(), absolutePath);
 
         if (!Boolean.FALSE.equals(matchedStatus)) {
             matchedStatus = contentOK;
@@ -123,10 +125,20 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
         return Boolean.TRUE.equals(matchedStatus);
     }
 
-    private boolean canHandleContent(IndexEntry entry, SearchContext context) {
-        boolean result = MimeUtils.isTextType(entry.getMimeType()) && (entry.getCharsetName().length() > 0);
+    @Override
+    public Boolean isMatching(String absolutePath, boolean isDirectory, SearchContext context, Boolean acceptedStatus) {
+        String relative = FilePathUtils.absoluteToRelativePath(absolutePath, getSearchRootDir());
+        FileType fileType = fileTypeDetector.detectFileType(absolutePath);
+        if (fileType == null) {
+            fileType = FileType.UNKNOWN_FILE_TYPE;
+        }
+        FoundDocument document = new FoundDocument(relative, isDirectory, fileType.getMimeType(), fileType.getCharsetName());
+        return isMatching(document, context, acceptedStatus);
+    }
 
-        return result;
+
+    private boolean canHandleContent(String mimeType, String charsetName) {
+        return MimeUtils.isTextType(mimeType) && (charsetName.length() > 0);
     }
 
     private String[] stripMatchingWords(String[] words, String filePath) {
@@ -136,17 +148,17 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
         return resultList.toArray(new String[resultList.size()]);
     }
 
-    private boolean hasAllWordsInFile(String[] words, IndexEntry entry, String entryAbsolutePath) {
-        Charset charset = Charset.forName(entry.getCharsetName());
+    private boolean hasAllWordsInFile(String[] words, String charsetName, String absolutePath) {
+        Charset charset = Charset.forName(charsetName);
 
         boolean fileContainsAllWords = false;
 
         try (BufferedReader in = new BufferedReader(
                 new InputStreamReader(
-                        new FileInputStream(entryAbsolutePath), charset))) {
+                        new FileInputStream(absolutePath), charset))) {
             fileContainsAllWords = hasAllWords(in, words);
         } catch (UnsupportedEncodingException uee) {
-            throw new SearchException("Wrong encoding for file: " + entryAbsolutePath + ", encoding: " + entry.getCharsetName(), uee);
+            throw new SearchException("Wrong encoding for file: " + absolutePath + ", encoding: " + charsetName, uee);
         } catch (IOException ioe) {
             throw new SearchException("IO error: " + ioe.getMessage(), ioe);
         }

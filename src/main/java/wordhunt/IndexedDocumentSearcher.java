@@ -25,12 +25,12 @@ import java.nio.file.Paths;
  *
  * @author piotr
  */
-public class BasicIndexSearcher implements IndexSearcher {
+public class IndexedDocumentSearcher implements DocumentSearcher {
 
     private final SearchConfig config;
     private final IndexWalkerFactory indexWalkerFactory;
 
-    public BasicIndexSearcher(SearchConfig config, IndexWalkerFactory indexWalkerFactory) {
+    public IndexedDocumentSearcher(SearchConfig config, IndexWalkerFactory indexWalkerFactory) {
         this.config = config;
         this.indexWalkerFactory = indexWalkerFactory;
     }
@@ -48,7 +48,7 @@ public class BasicIndexSearcher implements IndexSearcher {
         matcher.prepare(terms, context);
 
         try (IndexWalker walker = indexWalkerFactory.newWalker(indexFile)) {
-            IndexEntry entry;
+            FoundDocument entry;
 
             String[] sourcePath = walker.nextMeta();
             if (sourcePath != null && sourcePath.length > 1) {
@@ -85,7 +85,7 @@ public class BasicIndexSearcher implements IndexSearcher {
         }
     }
 
-    private void processIndexEntry(IndexEntry entry, SearchMatcher matcher, SearchConsumer consumer, SearchContext context) {
+    private void processIndexEntry(FoundDocument entry, SearchMatcher matcher, SearchConsumer consumer, SearchContext context) {
 
         if (Boolean.TRUE.equals(matcher.isMatching(entry, context, null))) {
             consumer.handle(

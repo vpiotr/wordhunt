@@ -46,7 +46,7 @@ public class FilePathMatcher extends BaseFileMatcher implements SearchMatcher {
     }
 
     @Override
-    public Boolean isMatching(IndexEntry entry, SearchContext context, Boolean acceptedStatus) {
+    public Boolean isMatching(FoundDocument entry, SearchContext context, Boolean acceptedStatus) {
 
         if (isIgnoredFile(entry.getFilePath(), context)) {
             return Boolean.FALSE;
@@ -67,6 +67,32 @@ public class FilePathMatcher extends BaseFileMatcher implements SearchMatcher {
 
         if (!Boolean.FALSE.equals(matchedStatus)) {
             matchedStatus = nextMatcherResult(entry, context, matchedStatus);
+        }
+
+        return Boolean.TRUE.equals(matchedStatus);
+    }
+
+    @Override
+    public Boolean isMatching(String absolutePath, boolean isDirectory, SearchContext context, Boolean acceptedStatus) {
+        if (isIgnoredFile(absolutePath, context)) {
+            return Boolean.FALSE;
+        }
+
+        String filePath = FilePathUtils.absoluteToRelativePath(absolutePath, getSearchRootDir());
+
+        Boolean matchedStatus = null;
+
+        matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_PATH, filePath, matchedStatus);
+
+        matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_FILE,
+                FilePathUtils.extractFileName(filePath), matchedStatus);
+
+        if (Boolean.TRUE.equals(matchedStatus) && !isIncludeDirsEnabled() && new File(filePath).isDirectory()) {
+            matchedStatus = Boolean.FALSE;
+        }
+
+        if (!Boolean.FALSE.equals(matchedStatus)) {
+            matchedStatus = nextMatcherResult(absolutePath, isDirectory, context, matchedStatus);
         }
 
         return Boolean.TRUE.equals(matchedStatus);

@@ -116,7 +116,7 @@ public class FileIndexer {
                     fileType = FileType.UNKNOWN_FILE_TYPE;
                 }
 
-                IndexEntry entry = new IndexEntry(absolutePath, isDirectory, fileType.getMimeType(), fileType.getCharsetName());
+                FoundDocument entry = new FoundDocument(absolutePath, isDirectory, fileType.getMimeType(), fileType.getCharsetName());
                 entryWriter.writeEntry(writer, entry);
             }
         });

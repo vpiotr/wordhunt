@@ -24,5 +24,5 @@ import java.io.BufferedWriter;
  */
 public interface IndexEntryWriter {
 
-    void writeEntry(BufferedWriter target, IndexEntry entry);
+    void writeEntry(BufferedWriter target, FoundDocument entry);
 }

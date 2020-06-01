@@ -32,7 +32,7 @@ public class BasicIndexEntryWriter implements IndexEntryWriter {
     }
 
     @Override
-    public void writeEntry(BufferedWriter target, IndexEntry entry) {
+    public void writeEntry(BufferedWriter target, FoundDocument entry) {
         StringBuilder builder = new StringBuilder();
 
         if (entry.isDirectory()) {
