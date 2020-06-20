@@ -24,14 +24,16 @@ import java.io.File;
 public class BasicSearchConsumer implements SearchConsumer {
 
     private final boolean formatAsListing;
+    private final DocumentStorage documentStorage;
 
-    public BasicSearchConsumer(SearchConfig config) {
+    public BasicSearchConsumer(SearchConfig config, DocumentStorage documentStorage) {
         this.formatAsListing = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_LIST));
+        this.documentStorage = documentStorage;
     }
 
     @Override
     public void handle(File file) {
-        if (file.exists()) {
+        if (documentStorage.documentExists(file.getAbsolutePath())) {
             if (formatAsListing) {
                 System.out.println(file.getAbsolutePath());
             } else {

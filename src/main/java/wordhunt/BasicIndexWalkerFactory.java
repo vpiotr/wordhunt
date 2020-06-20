@@ -15,12 +15,6 @@ limitations under the License.
  */
 package wordhunt;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 /**
  * Creates default index walker object.
  *
@@ -28,18 +22,17 @@ import java.nio.file.Paths;
  */
 public class BasicIndexWalkerFactory implements IndexWalkerFactory {
 
+    private final IndexStorage indexStorage;
+
+    public BasicIndexWalkerFactory(IndexStorage is) {
+        this.indexStorage = is;
+    }
+
     @Override
     public IndexWalker newWalker(String indexFilePath) {
-        try {
             return new BasicIndexWalker(
-                    Files.newBufferedReader(Paths.get(indexFilePath), StandardCharsets.UTF_8)
+                    indexStorage.getReaderForIndexFile(indexFilePath)
             );
-
-        } catch (FileNotFoundException fnfe) {
-            throw new SearchException("Index file not found: " + indexFilePath, fnfe);
-        } catch (IOException ioe) {
-            throw new SearchException("IO error while reading index: " + indexFilePath, ioe);
-        }
     }
 
 }

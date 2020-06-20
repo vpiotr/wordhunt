@@ -333,7 +333,8 @@ class App {
             show(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
         }
 
-        IndexValidator iv = new IndexValidator(config);
+        IndexStorage indexStorage = new IndexStorage();
+        IndexValidator iv = new IndexValidator(config, indexStorage);
         if (iv.indexExists()) {
             new SearchStrategyUsingPreparedIndex(config).invoke();
         } else {
@@ -352,7 +353,9 @@ class App {
     private static void performIndex(SearchConfig config) {
         String dirName = (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
         show(String.format("Performing 'index' in dir [%s]", dirName));
-        FileIndexer fi = new FileIndexer(config, dirName, new TextFileTypeDetector(), new BasicIndexEntryWriter(dirName));
+        DocumentStorage documentStorage = new DocumentStorage();
+        IndexStorage indexStorage = new IndexStorage();
+        FileIndexer fi = new FileIndexer(config, dirName, new TextFileTypeDetector(), new BasicIndexEntryWriter(dirName), indexStorage, documentStorage);
         fi.rebuildIndex();
     }
 
@@ -377,9 +380,11 @@ class App {
 
         public void invoke() {
             SearchTerms searchTerms = buildTerms(config);
-            DocumentSearcher searcher = new IndexedDocumentSearcher(config, new BasicIndexWalkerFactory());
-            SearchConsumer consumer = new BasicSearchConsumer(config);
-            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector()));
+            DocumentStorage documentStorage = new DocumentStorage();
+            IndexStorage indexStorage = new IndexStorage();
+            DocumentSearcher searcher = new IndexedDocumentSearcher(config, new BasicIndexWalkerFactory(indexStorage), documentStorage);
+            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage);
+            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
             searcher.search(searchTerms, matcher, consumer);
         }
     }
@@ -393,9 +398,10 @@ class App {
 
         public void invoke() {
             SearchTerms searchTerms = buildTerms(config);
+            DocumentStorage documentStorage = new DocumentStorage();
             OnflySearcher searcher = new OnflySearcher(config);
-            SearchConsumer consumer = new BasicSearchConsumer(config);
-            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector()));
+            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage);
+            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
             searcher.search(searchTerms, matcher, consumer);
         }
     }

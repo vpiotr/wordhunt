@@ -25,9 +25,11 @@ import java.io.File;
 public class IndexValidator {
 
     private SearchConfig config;
+    private final IndexStorage indexStorage;
 
-    public IndexValidator(SearchConfig config) {
+    public IndexValidator(SearchConfig config, IndexStorage indexStorage) {
         this.config = config;
+        this.indexStorage = indexStorage;
     }
 
     public void checkIndex() {
@@ -37,8 +39,7 @@ public class IndexValidator {
     }
 
     public boolean indexExists() {
-        File file = new File(getIndexAbsolutePath());
-        return file.exists();
+        return indexStorage.indexExists(getIndexAbsolutePath());
     }
 
     private String getIndexAbsolutePath() {

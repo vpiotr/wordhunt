@@ -17,8 +17,6 @@ package wordhunt;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * Performs search using provided terms and index file.
@@ -29,10 +27,12 @@ public class IndexedDocumentSearcher implements DocumentSearcher {
 
     private final SearchConfig config;
     private final IndexWalkerFactory indexWalkerFactory;
+    private final DocumentStorage documentStorage;
 
-    public IndexedDocumentSearcher(SearchConfig config, IndexWalkerFactory indexWalkerFactory) {
+    public IndexedDocumentSearcher(SearchConfig config, IndexWalkerFactory indexWalkerFactory, DocumentStorage documentStorage) {
         this.config = config;
         this.indexWalkerFactory = indexWalkerFactory;
+        this.documentStorage = documentStorage;
     }
 
     @Override
@@ -71,15 +71,15 @@ public class IndexedDocumentSearcher implements DocumentSearcher {
         return new SearchContext();
     }
 
-    private void processMeta(String metaName, String metaValue) throws IOException {
+    private void processMeta(String metaName, String metaValue) {
         if (metaName.equals(IndexConst.META_SOURCE_PATH)) {
             validateSourcePathFromMeta(metaValue);
         }
     }
 
-    private void validateSourcePathFromMeta(String sourcePathInMeta) throws IOException {
+    private void validateSourcePathFromMeta(String sourcePathInMeta) {
         String currentDir = getSearchRootDir();
-        if (!Files.isSameFile(Paths.get(sourcePathInMeta), Paths.get(currentDir))) {
+        if (!documentStorage.isSameDocumentPath(sourcePathInMeta, currentDir)) {
             throw new SearchException(String.format("Invalid search directory - not compatible with used index (search directory: [%s], index built for directory: [%s])",
                     currentDir, sourcePathInMeta));
         }

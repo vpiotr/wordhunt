@@ -15,19 +15,14 @@ limitations under the License.
  */
 package wordhunt;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.List;
-
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.IOException;
-import java.io.File;
-
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Checks if file contains in it's body required words.
@@ -38,14 +33,16 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
     private final static String CTX_CONTENT_WORDS_ANY = "content_words_any";
     private final static String CTX_CONTENT_WORDS_CONTENT = "content_words_content";
     private final FileTypeDetector fileTypeDetector;
+    private final DocumentStorage documentStorage;
 
-    public FileContentMatcher(SearchConfig config, FileTypeDetector fileTypeDetector) {
-        this(config, null, fileTypeDetector);
+    public FileContentMatcher(SearchConfig config, FileTypeDetector fileTypeDetector, DocumentStorage documentStorage) {
+        this(config, null, fileTypeDetector, documentStorage);
     }
 
-    public FileContentMatcher(SearchConfig config, SearchMatcher nextMatcher, FileTypeDetector fileTypeDetector) {
+    public FileContentMatcher(SearchConfig config, SearchMatcher nextMatcher, FileTypeDetector fileTypeDetector, DocumentStorage documentStorage) {
         super(config, nextMatcher);
         this.fileTypeDetector = fileTypeDetector;
+        this.documentStorage = documentStorage;
     }
 
     @Override
@@ -82,16 +79,13 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
 
         String absolutePath = buildEntryAbsolutePath(filePath);
 
-        File entryFile = new File(absolutePath);
-        boolean isDirectory = entryFile.isDirectory();
-        boolean exists = entryFile.exists();
-        boolean canRead = entryFile.canRead();
+        DocumentInfo documentInfo = documentStorage.getDocumentInfo(absolutePath);
 
-        if (isDirectory || !exists || !canRead || wordsLeftForContent.length == 0) {
+        if (documentInfo.isDirectory() || !documentInfo.documentExists() || !documentInfo.isReadable() || wordsLeftForContent.length == 0) {
 
-            if ((isDirectory && !isIncludeDirsEnabled())
-                    || !exists
-                    || !canRead
+            if ((documentInfo.isDirectory() && !isIncludeDirsEnabled())
+                    || !documentInfo.documentExists()
+                    || !documentInfo.isReadable()
                     || (wordsLeftForContent.length > 0)) {
                 matchedStatus = Boolean.FALSE;
             }
@@ -153,9 +147,7 @@ public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher
 
         boolean fileContainsAllWords = false;
 
-        try (BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                        new FileInputStream(absolutePath), charset))) {
+        try (BufferedReader in = documentStorage.getDocumentReader(absolutePath, charset)) {
             fileContainsAllWords = hasAllWords(in, words);
         } catch (UnsupportedEncodingException uee) {
             throw new SearchException("Wrong encoding for file: " + absolutePath + ", encoding: " + charsetName, uee);

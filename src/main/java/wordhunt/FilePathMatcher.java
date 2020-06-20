@@ -15,8 +15,6 @@ limitations under the License.
  */
 package wordhunt;
 
-import java.io.File;
-
 /**
  * Class which compares a specified file path with word requirements.
  *
@@ -26,13 +24,15 @@ public class FilePathMatcher extends BaseFileMatcher implements SearchMatcher {
 
     private final static String CTX_PATH_WORDS_FILE = "path_words_file";
     private final static String CTX_PATH_WORDS_PATH = "path_words_path";
+    private final DocumentStorage documentStorage;
 
-    public FilePathMatcher(SearchConfig config) {
-        this(config, null);
+    public FilePathMatcher(SearchConfig config, DocumentStorage documentStorage) {
+        this(config, null, documentStorage);
     }
 
-    public FilePathMatcher(SearchConfig config, SearchMatcher nextMatcher) {
+    public FilePathMatcher(SearchConfig config, SearchMatcher nextMatcher, DocumentStorage documentStorage) {
         super(config, nextMatcher);
+        this.documentStorage = documentStorage;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class FilePathMatcher extends BaseFileMatcher implements SearchMatcher {
         matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_FILE,
                 FilePathUtils.extractFileName(filePath), matchedStatus);
 
-        if (Boolean.TRUE.equals(matchedStatus) && !isIncludeDirsEnabled() && new File(filePath).isDirectory()) {
+        if (Boolean.TRUE.equals(matchedStatus) && !isIncludeDirsEnabled() && documentStorage.isDirectory(filePath)) {
             matchedStatus = Boolean.FALSE;
         }
 
@@ -87,7 +87,7 @@ public class FilePathMatcher extends BaseFileMatcher implements SearchMatcher {
         matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_FILE,
                 FilePathUtils.extractFileName(filePath), matchedStatus);
 
-        if (Boolean.TRUE.equals(matchedStatus) && !isIncludeDirsEnabled() && new File(filePath).isDirectory()) {
+        if (Boolean.TRUE.equals(matchedStatus) && !isIncludeDirsEnabled() && documentStorage.isDirectory(filePath)) {
             matchedStatus = Boolean.FALSE;
         }
 
