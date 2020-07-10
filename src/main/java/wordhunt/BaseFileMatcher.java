@@ -23,7 +23,7 @@ import java.util.HashSet;
  *
  * @author piotr
  */
-public class BaseFileMatcher {
+public abstract class BaseFileMatcher implements SearchMatcher {
 
     private final static String CTX_FILES_TO_IGNORE = "files_to_ignore";
 

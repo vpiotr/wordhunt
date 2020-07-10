@@ -28,7 +28,7 @@ import java.util.Set;
  * Checks if file contains in it's body required words.
  * @author piotr
  */
-public class FileContentMatcher extends BaseFileMatcher implements SearchMatcher {
+public class FileContentMatcher extends BaseFileMatcher {
 
     private final static String CTX_CONTENT_WORDS_ANY = "content_words_any";
     private final static String CTX_CONTENT_WORDS_CONTENT = "content_words_content";

@@ -20,13 +20,13 @@ package wordhunt;
  *
  * @author piotr
  */
-public class FilePathMatcher extends BaseFileMatcher implements SearchMatcher {
+public class FilePathMatcher extends BaseFileMatcher {
 
     private final static String CTX_PATH_WORDS_FILE = "path_words_file";
     private final static String CTX_PATH_WORDS_PATH = "path_words_path";
     private final DocumentStorage documentStorage;
 
-    public FilePathMatcher(SearchConfig config, DocumentStorage documentStorage) {
+    public FilePathMatcher(SearchConfig config, DocumentStorageViaFiles documentStorage) {
         this(config, null, documentStorage);
     }
 
