@@ -15,8 +15,6 @@ limitations under the License.
  */
 package wordhunt;
 
-import java.io.File;
-
 /**
  * Displays found files on screen.
  * @author piotr
