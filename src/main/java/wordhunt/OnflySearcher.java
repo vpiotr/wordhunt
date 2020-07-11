@@ -1,7 +1,5 @@
 package wordhunt;
 
-import java.io.File;
-
 public class OnflySearcher implements DocumentSearcher {
 
     private final SearchConfig config;
@@ -20,9 +18,7 @@ public class OnflySearcher implements DocumentSearcher {
 
     private void processEntry(String absolutePath, boolean isDirectory, SearchContext context, SearchMatcher matcher, SearchConsumer consumer) {
         if (Boolean.TRUE.equals(matcher.isMatching(absolutePath, isDirectory, context, null))) {
-            consumer.handle(
-                    new File(absolutePath)
-            );
+            consumer.handle(absolutePath);
         }
     }
 

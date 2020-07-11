@@ -94,7 +94,7 @@ public class IndexedDocumentSearcher implements DocumentSearcher {
                                     getSearchRootDir(),
                                     entry.getFilePath()
                             )
-                    )
+                    ).getAbsolutePath()
             );
         }
     }

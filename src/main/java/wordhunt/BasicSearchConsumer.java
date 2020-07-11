@@ -32,12 +32,12 @@ public class BasicSearchConsumer implements SearchConsumer {
     }
 
     @Override
-    public void handle(File file) {
-        if (documentStorage.documentExists(file.getAbsolutePath())) {
+    public void handle(String absolutePath) {
+        if (documentStorage.documentExists(absolutePath)) {
             if (formatAsListing) {
-                System.out.println(file.getAbsolutePath());
+                System.out.println(absolutePath);
             } else {
-                System.out.println("Found: " + file.getAbsolutePath());
+                System.out.println("Found: " + absolutePath);
             }
         }
     }

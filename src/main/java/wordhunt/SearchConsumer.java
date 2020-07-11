@@ -24,5 +24,5 @@ import java.io.File;
  */
 public interface SearchConsumer {
 
-    void handle(File file);
+    void handle(String absolutePath);
 }
