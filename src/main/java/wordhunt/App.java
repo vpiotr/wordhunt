@@ -24,8 +24,6 @@ import java.util.Map.Entry;
 
 class App {
 
-    private final static String VERSION_STRING = "1.0";
-
     public static void main(String[] args) {
         boolean commandSyntaxOK = false;
         boolean returnFail = false;
@@ -284,10 +282,10 @@ class App {
 
     private static void showVersion() {
 
-        System.out.println("wordhunt version " + App.VERSION_STRING);
+        System.out.println("wordhunt version " + getVersionString());
 
         String[] licenseInfo = new String[]{
-            "Copyright (C) 2017 Piotr Likus",
+            "Copyright (C) 2020 Piotr Likus",
             "Apache License v2.0: <https://www.apache.org/licenses/LICENSE-2.0>.",
             "There is NO WARRANTY, to the extent permitted by law."
         };
@@ -295,6 +293,10 @@ class App {
         for (String line : licenseInfo) {
             System.out.println(line);
         }
+    }
+
+    private static String getVersionString() {
+        return App.class.getPackage().getImplementationVersion();
     }
 
     private static void show(String message) {
