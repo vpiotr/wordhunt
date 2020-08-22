@@ -243,8 +243,8 @@ class App {
         if (longDescription) {
             String[] syntax = new String[]{
                 "Examples:",
-                "* Create index file:",
-                "    wordhunt --index .",
+                "* Create index file for/in specified directory:",
+                "    wordhunt --index /home/user1/Books",
                 "* Find documents with 3 words in current dir:",
                 "    wordhunt basic search java",
                 "* Find documents with 3 words in Downloads dir:",
@@ -272,9 +272,9 @@ class App {
                 "    --inname \"word-list\"          for searching for words in file name",
                 "    --incontent \"word-list\"       for searching for words inside file's contents",
                 "    --anywhere \"word-list\"        for searching for words in path or file's contents",
-                "                                  (equal to default search version without options)",
                 "",
-                "WORD-LIST is space-separated word list in any order (any number of arguments)."
+                "WORD-LIST is space-separated word list in any order (any number of arguments).",
+                "Default search mode is --inpath"
             };
 
             for (String line : syntax) {
