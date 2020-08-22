@@ -40,7 +40,7 @@ public class IndexedDocumentSearcher implements DocumentSearcher {
         String indexFile = getIndexAbsolutePath();
         SearchContext context = newSearchContext();
 
-        boolean list = Boolean.TRUE.equals((Boolean) config.getValue(SearchConst.CFG_SEARCH_LIST));
+        boolean list = Boolean.TRUE.equals((Boolean) config.getValue(SearchConst.CFG_SEARCH_BRIEF));
         if (!list) {
             System.out.println("Searching in index file: " + indexFile);
         }

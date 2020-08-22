@@ -128,8 +128,8 @@ class App {
         int i = startIndex;
         while (i < args.length) {
             String value = args[i];
-            if ("--list".equals(value)) {
-                result.setValue(SearchConst.CFG_SEARCH_LIST, Boolean.TRUE);
+            if ("--brief".equals(value)) {
+                result.setValue(SearchConst.CFG_SEARCH_BRIEF, Boolean.TRUE);
             } else if ("--include-dirs".equals(value)) {
                 result.setValue(SearchConst.CFG_SEARCH_INCLUDE_DIRS, Boolean.TRUE);
             } else if ("--index-path".equals(value)) {
@@ -155,8 +155,8 @@ class App {
                 // do nothing
             } else {
                 String[] anyTerms = Arrays.copyOfRange(args, i, args.length);
-                anyTerms = ArrayUtils.merge(anyTerms, getTermsInConfig(result, SearchConst.CFG_SEARCH_TERMS_ANY));
-                setTermsInConfig(anyTerms, result, SearchConst.CFG_SEARCH_TERMS_ANY);
+                anyTerms = ArrayUtils.merge(anyTerms, getTermsInConfig(result, SearchConst.CFG_SEARCH_TERMS_PATH));
+                setTermsInConfig(anyTerms, result, SearchConst.CFG_SEARCH_TERMS_PATH);
                 i += anyTerms.length;
             }
 
@@ -243,9 +243,14 @@ class App {
         if (longDescription) {
             String[] syntax = new String[]{
                 "Examples:",
+                "* Create index file:",
                 "    wordhunt --index .",
-                "    wordhunt --find . basic search java",
+                "* Find documents with 3 words in current dir:",
+                "    wordhunt basic search java",
+                "* Find documents with 3 words in Downloads dir:",
                 "    wordhunt --find \"/home/user1/Downloads\" --inpath \"basic search java\"",
+                "* Create brief output, useful for further processing:",
+                "    wordhunt --find /home/user1/Books --brief python machine learning",
                 "",
                 "COMMAND can be:",
                 "    --index   creates index required for searching",
@@ -257,7 +262,7 @@ class App {
                 "    it's absolute or relative path, \".\" is acceptable",
                 "",
                 "OPTIONS can be:",
-                "    --list                        for clean file listing, useful for further processing",
+                "    --brief                       for clean file listing, useful for further processing",
                 "    --include-dirs                for including matching directory names",
                 "    --index-path \"path\"           for specifying index file path,",
                 "                                  by default index is stored in DIRECTORY",
@@ -328,7 +333,7 @@ class App {
 
     private static void performFind(SearchConfig config, boolean simpleMode) {
         String dirName = (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
-        boolean list = Boolean.TRUE.equals((Boolean) config.getValue(SearchConst.CFG_SEARCH_LIST));
+        boolean list = Boolean.TRUE.equals((Boolean) config.getValue(SearchConst.CFG_SEARCH_BRIEF));
         String[] allTerms = getAllTerms(config);
 
         if (!list) {

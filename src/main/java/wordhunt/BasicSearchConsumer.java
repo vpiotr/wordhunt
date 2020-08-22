@@ -25,7 +25,7 @@ public class BasicSearchConsumer implements SearchConsumer {
     private final DocumentStorage documentStorage;
 
     public BasicSearchConsumer(SearchConfig config, DocumentStorage documentStorage) {
-        this.formatAsListing = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_LIST));
+        this.formatAsListing = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_BRIEF));
         this.documentStorage = documentStorage;
     }
 

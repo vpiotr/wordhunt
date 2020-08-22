@@ -36,7 +36,7 @@ public class SearchConst {
     public final static String CFG_SEARCH_INCLUDE_DIRS = "include_dirs";
     public final static String CFG_SEARCH_CASE_SENSITIVE = "case_sensitive";
     public final static String CFG_SEARCH_NO_CASE_SPLIT = "no_case_split";
-    public final static String CFG_SEARCH_LIST = "list";
+    public final static String CFG_SEARCH_BRIEF = "list";
 
     private SearchConst() {
     }
