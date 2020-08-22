@@ -29,7 +29,21 @@ public class CharsetUtils {
     public final static String CHARSET_UTF8 = "UTF-8";
     public final static String DEFAULT_CHARSET = "US-ASCII";
 
-    public static boolean isValidUtf8(byte[] input) {
+    public static String detectCharsetName(byte[] data) {
+        String charsetName;
+        if (isValidUtf8(data)) {
+            charsetName = CHARSET_UTF8;
+        } else {
+            charsetName = DEFAULT_CHARSET;
+        }
+        return charsetName;
+    }
+
+    public static boolean isUtf8CharsetName(String charsetName) {
+        return CHARSET_UTF8.equals(charsetName);
+    }
+
+    private static boolean isValidUtf8(byte[] input) {
 
         CharsetDecoder cs = Charset.forName(CHARSET_UTF8).newDecoder();
 

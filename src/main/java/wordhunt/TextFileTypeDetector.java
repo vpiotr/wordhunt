@@ -55,11 +55,7 @@ public class TextFileTypeDetector implements FileTypeDetector {
             if (isPlainTextData(data)) {
                 String mimeType = MimeConst.PLAIN_TEXT;
                 String charsetName = "";
-                if (CharsetUtils.isValidUtf8(data)) {
-                    charsetName = CharsetUtils.CHARSET_UTF8;
-                } else {
-                    charsetName = CharsetUtils.DEFAULT_CHARSET;
-                }
+                charsetName = CharsetUtils.detectCharsetName(data);
                 return new FileType(mimeType, charsetName);
             }
         }
