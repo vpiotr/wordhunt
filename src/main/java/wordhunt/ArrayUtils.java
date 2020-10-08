@@ -22,7 +22,7 @@ import java.util.Arrays;
  *
  * @author piotr
  */
-public class ArrayUtils {
+public final class ArrayUtils {
 
     /**
      * Joins two arrays into a new one.
@@ -51,8 +51,7 @@ public class ArrayUtils {
         if (result == null) {
             result = second;
         } else {
-            int firstLen = (first != null) ? first.length : 0;
-            System.arraycopy(second, 0, result, firstLen, second.length);
+            System.arraycopy(second, 0, result, first.length, second.length);
         }
 
         return result;

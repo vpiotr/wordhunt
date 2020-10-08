@@ -35,7 +35,4 @@ public class KeyValueStorage {
         return storage.get(keyName);
     }
 
-    public boolean contains(String keyName) {
-        return storage.containsKey(keyName);
-    }
 }

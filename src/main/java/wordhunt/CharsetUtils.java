@@ -15,19 +15,19 @@ limitations under the License.
  */
 package wordhunt;
 
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.Charset;
-import java.nio.charset.CharacterCodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Utility functions for charset handling.
  * @author piotr
  */
-public class CharsetUtils {
+public final class CharsetUtils {
 
-    public final static String CHARSET_UTF8 = "UTF-8";
-    public final static String DEFAULT_CHARSET = "US-ASCII";
+    private static final String CHARSET_UTF8 = "UTF-8";
+    private static final String DEFAULT_CHARSET = "US-ASCII";
 
     public static String detectCharsetName(byte[] data) {
         String charsetName;
@@ -45,7 +45,7 @@ public class CharsetUtils {
 
     private static boolean isValidUtf8(byte[] input) {
 
-        CharsetDecoder cs = Charset.forName(CHARSET_UTF8).newDecoder();
+        CharsetDecoder cs = StandardCharsets.UTF_8.newDecoder();
 
         try {
             cs.decode(ByteBuffer.wrap(input));

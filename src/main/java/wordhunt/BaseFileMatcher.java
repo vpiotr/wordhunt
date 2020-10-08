@@ -25,18 +25,14 @@ import java.util.HashSet;
  */
 public abstract class BaseFileMatcher implements SearchMatcher {
 
-    private final static String CTX_FILES_TO_IGNORE = "files_to_ignore";
+    private static final String CTX_FILES_TO_IGNORE = "files_to_ignore";
 
-    private SearchMatcher nextMatcher;
-    protected SearchConfig config;
+    private final SearchMatcher nextMatcher;
+    private final SearchConfig config;
 
-    private boolean caseSensitive;
-    private boolean includeDirs;
-    private boolean caseWordSplit;
-
-    public BaseFileMatcher(SearchConfig config) {
-        this(config, null);
-    }
+    private final boolean caseSensitive;
+    private final boolean includeDirs;
+    private final boolean caseWordSplit;
 
     public BaseFileMatcher(SearchConfig config, SearchMatcher nextMatcher) {
         this.config = config;

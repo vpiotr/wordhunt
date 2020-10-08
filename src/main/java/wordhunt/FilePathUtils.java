@@ -5,13 +5,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FilePathUtils {
+public final class FilePathUtils {
+    private FilePathUtils() {}
+
     /**
      * Build path from directory and file names
      *
-     * @param dirName
-     * @param fileName
-     * @return
+     * @param dirName directory name
+     * @param fileName file name
+     * @return full path to file inside directory
      */
     public static String buildFilePath(String dirName, String fileName) {
         return dirName + File.separator + fileName;
@@ -20,8 +22,8 @@ public class FilePathUtils {
     /**
      * Extract file name from file path
      *
-     * @param filePath
-     * @return
+     * @param filePath path to extract file name from
+     * @return last part of path
      */
     public static String extractFileName(String filePath) {
         return new File(filePath).getName();
@@ -73,7 +75,7 @@ public class FilePathUtils {
      */
     public static String toCanonicalPath(String filePath) {
         try {
-            return new File((String) filePath).getCanonicalPath();
+            return new File(filePath).getCanonicalPath();
         } catch (IOException ioe) {
             throw new SearchException("IO error: " + ioe.getMessage(), ioe);
         }

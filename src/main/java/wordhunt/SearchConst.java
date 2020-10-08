@@ -20,23 +20,23 @@ package wordhunt;
  * 
  * @author piotr
  */
-public class SearchConst {
+public final class SearchConst {
 
-    public final static String OPT_ENABLE_DEBUG = "--debug";
-    public final static String DEF_INDEX_FILE_NAME = "index.dat";
-    public final static String CFG_INDEX_FILE_PATH = "index_path";
-    public final static String CFG_SEARCH_ROOT_DIR = "search_root_dir";
+    public static final String OPT_ENABLE_DEBUG = "--debug";
+    public static final String DEF_INDEX_FILE_NAME = "index.dat";
+    public static final String CFG_INDEX_FILE_PATH = "index_path";
+    public static final String CFG_SEARCH_ROOT_DIR = "search_root_dir";
 
-    public final static String CFG_SEARCH_TERMS = "terms";
-    public final static String CFG_SEARCH_TERMS_ANY = "terms_any";
-    public final static String CFG_SEARCH_TERMS_FILE = "terms_file";
-    public final static String CFG_SEARCH_TERMS_PATH = "terms_path";
-    public final static String CFG_SEARCH_TERMS_CONTENT = "terms_content";
+    public static final String CFG_SEARCH_TERMS = "terms";
+    public static final String CFG_SEARCH_TERMS_ANY = "terms_any";
+    public static final String CFG_SEARCH_TERMS_FILE = "terms_file";
+    public static final String CFG_SEARCH_TERMS_PATH = "terms_path";
+    public static final String CFG_SEARCH_TERMS_CONTENT = "terms_content";
 
-    public final static String CFG_SEARCH_INCLUDE_DIRS = "include_dirs";
-    public final static String CFG_SEARCH_CASE_SENSITIVE = "case_sensitive";
-    public final static String CFG_SEARCH_NO_CASE_SPLIT = "no_case_split";
-    public final static String CFG_SEARCH_BRIEF = "list";
+    public static final String CFG_SEARCH_INCLUDE_DIRS = "include_dirs";
+    public static final String CFG_SEARCH_CASE_SENSITIVE = "case_sensitive";
+    public static final String CFG_SEARCH_NO_CASE_SPLIT = "no_case_split";
+    public static final String CFG_SEARCH_BRIEF = "list";
 
     private SearchConst() {
     }

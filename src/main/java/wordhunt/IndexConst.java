@@ -20,7 +20,7 @@ package wordhunt;
  * 
  * @author piotr
  */
-public class IndexConst {
+public final class IndexConst {
   public static final String FILE_PREFIX = "F";
   public static final String DIR_PREFIX = "D";
   public static final String COMMENT_PREFIX = "; ";

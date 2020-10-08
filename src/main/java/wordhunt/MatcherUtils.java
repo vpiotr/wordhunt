@@ -31,9 +31,9 @@ import java.util.regex.Matcher;
  *
  * @author piotr
  */
-public class MatcherUtils {
+public final class MatcherUtils {
 
-    private final static Pattern wordPattern = Pattern.compile("[\\w']+");
+    private static final Pattern WORD_PATTERN = Pattern.compile("[\\w']+");
     
     public static String[] prepareWordsFromTerms(String[] words) {
         return prepareWordsFromTerms(words, false);
@@ -49,7 +49,7 @@ public class MatcherUtils {
         for (String word : words) {
 
             String newWord = caseSensitive ? word : word.toUpperCase(Locale.getDefault());
-            Matcher m = wordPattern.matcher(newWord);
+            Matcher m = WORD_PATTERN.matcher(newWord);
 
             while (m.find()) {
                 String foundWord = newWord.substring(m.start(), m.end());
@@ -57,7 +57,7 @@ public class MatcherUtils {
             }
         }
 
-        return newWords.toArray(new String[newWords.size()]);
+        return newWords.toArray(new String[0]);
     }
 
     public static boolean matchesAllWords(String text, String[] words,
@@ -91,7 +91,7 @@ public class MatcherUtils {
     }
 
     public static Set<String> extractWords(String text, boolean caseSensitive, boolean caseWordSplit) {
-        Matcher m = wordPattern.matcher(text);
+        Matcher m = WORD_PATTERN.matcher(text);
         Set<String> result = new HashSet<>();
 
         while (m.find()) {

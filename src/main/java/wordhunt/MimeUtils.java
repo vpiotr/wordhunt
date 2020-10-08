@@ -20,7 +20,7 @@ package wordhunt;
  *
  * @author piotr
  */
-public class MimeUtils {
+public final class MimeUtils {
 
     public static boolean isTextType(String mimeType) {
         return mimeType != null && (

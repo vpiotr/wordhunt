@@ -28,7 +28,7 @@ import java.io.File;
 public class TextFileTypeDetector implements FileTypeDetector {
 
     private final FileTypeDetector nextDetector;
-    private final static int DEFAULT_SAMPLE_LEN = 5000;
+    private static final int DEFAULT_SAMPLE_LEN = 5000;
     private final int maxSampleLength;
 
     public TextFileTypeDetector(FileTypeDetector nextDetector) {
@@ -54,8 +54,7 @@ public class TextFileTypeDetector implements FileTypeDetector {
 
             if (isPlainTextData(data)) {
                 String mimeType = MimeConst.PLAIN_TEXT;
-                String charsetName = "";
-                charsetName = CharsetUtils.detectCharsetName(data);
+                String charsetName = CharsetUtils.detectCharsetName(data);
                 return new FileType(mimeType, charsetName);
             }
         }
@@ -69,8 +68,8 @@ public class TextFileTypeDetector implements FileTypeDetector {
         int b;
 
         loop:
-        for (int i = 0; i < data.length; i++) {
-            b = data[i] & 0xFF;
+        for (byte a: data) {
+            b = a & 0xFF;
             if (b < 32) {
                 switch (b) {
                     case 9:

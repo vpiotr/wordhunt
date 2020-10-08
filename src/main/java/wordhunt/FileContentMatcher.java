@@ -30,8 +30,8 @@ import java.util.Set;
  */
 public class FileContentMatcher extends BaseFileMatcher {
 
-    private final static String CTX_CONTENT_WORDS_ANY = "content_words_any";
-    private final static String CTX_CONTENT_WORDS_CONTENT = "content_words_content";
+    private static final String CTX_CONTENT_WORDS_ANY = "content_words_any";
+    private static final String CTX_CONTENT_WORDS_CONTENT = "content_words_content";
     private final FileTypeDetector fileTypeDetector;
     private final DocumentStorage documentStorage;
 
@@ -91,11 +91,7 @@ public class FileContentMatcher extends BaseFileMatcher {
             }
 
             if (!Boolean.FALSE.equals(matchedStatus)) {
-                if (wordsLeftForContent.length == 0) {
-                    matchedStatus = Boolean.TRUE;
-                }
-
-                matchedStatus = nextMatcherResult(entry, context, matchedStatus);
+                matchedStatus = nextMatcherResult(entry, context, Boolean.TRUE);
             }
 
             return matchedStatus;
@@ -139,13 +135,13 @@ public class FileContentMatcher extends BaseFileMatcher {
         List<String> resultList = MatcherUtils.stripMatchingWords(words, filePath, isCaseSensitiveEnabled(),
                 isCaseWordSplitEnabled());
 
-        return resultList.toArray(new String[resultList.size()]);
+        return resultList.toArray(new String[0]);
     }
 
     private boolean hasAllWordsInFile(String[] words, String charsetName, String absolutePath) {
         Charset charset = Charset.forName(charsetName);
 
-        boolean fileContainsAllWords = false;
+        boolean fileContainsAllWords;
 
         try (BufferedReader in = documentStorage.getDocumentReader(absolutePath, charset)) {
             fileContainsAllWords = hasAllWords(in, words);

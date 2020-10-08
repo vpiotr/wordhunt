@@ -26,43 +26,15 @@ import java.util.HashMap;
  *
  * @author piotr
  */
-public class SearchTerms {
+public final class SearchTerms {
 
-    private String[] anyWords;
-    private String[] fileWords;
-    private String[] pathWords;
-    private String[] contentWords;
-
-    public static class SearchTermsBuilder {
-
-        private Map<String, String[]> terms = new HashMap<String, String[]>();
-
-        SearchTermsBuilder terms(Map<String, String[]> terms) {
-            this.terms = new HashMap<String, String[]>();
-
-            if (terms != null) {
-                this.terms.putAll(terms);
-            }
-
-            return this;
-        }
-
-        SearchTerms build() {
-            return new SearchTerms(
-                    terms.get(SearchConst.CFG_SEARCH_TERMS_ANY),
-                    terms.get(SearchConst.CFG_SEARCH_TERMS_FILE),
-                    terms.get(SearchConst.CFG_SEARCH_TERMS_PATH),
-                    terms.get(SearchConst.CFG_SEARCH_TERMS_CONTENT)
-            );
-        }
-
-    }
+    private final String[] anyWords;
+    private final String[] fileWords;
+    private final String[] pathWords;
+    private final String[] contentWords;
 
     public static SearchTermsBuilder builder() {
         return new SearchTermsBuilder();
-    }
-
-    private SearchTerms() {
     }
 
     private SearchTerms(String[] anyWords, String[] fileWords, String[] pathWords, String[] contentWords) {
@@ -89,10 +61,36 @@ public class SearchTerms {
     }
 
     private String[] returnWords(String[] words) {
-        return (words != null) ? (String[]) words.clone() : null;
+        return (words != null) ? words.clone() : null;
     }
 
     private String[] acceptWords(String[] words) {
-        return (words != null) ? (String[]) words.clone() : null;
+        return (words != null) ? words.clone() : null;
     }
+
+    public static class SearchTermsBuilder {
+
+        private Map<String, String[]> terms = new HashMap<>();
+
+        SearchTermsBuilder terms(Map<String, String[]> terms) {
+            this.terms = new HashMap<>();
+
+            if (terms != null) {
+                this.terms.putAll(terms);
+            }
+
+            return this;
+        }
+
+        SearchTerms build() {
+            return new SearchTerms(
+                    terms.get(SearchConst.CFG_SEARCH_TERMS_ANY),
+                    terms.get(SearchConst.CFG_SEARCH_TERMS_FILE),
+                    terms.get(SearchConst.CFG_SEARCH_TERMS_PATH),
+                    terms.get(SearchConst.CFG_SEARCH_TERMS_CONTENT)
+            );
+        }
+
+    }
+
 }

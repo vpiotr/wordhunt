@@ -95,22 +95,19 @@ public class FileIndexer {
         writeMeta(writer, IndexConst.META_SOURCE_PATH, FilePathUtils.toCanonicalPath(dirName));
         final String indexPathTxt = getIndexAbsolutePath();
 
-        walker.walk(dirName, new FileVisitor() {
-            @Override
-            public void handleItem(String absolutePath, boolean isDirectory) {
+        walker.walk(dirName, (absolutePath, isDirectory) -> {
 
-                if (documentStorage.isSameDocumentPath(absolutePath, indexPathTxt)) {
-                    return;
-                }
-
-                FileType fileType = detector.detectFileType(absolutePath);
-                if (fileType == null) {
-                    fileType = FileType.UNKNOWN_FILE_TYPE;
-                }
-
-                FoundDocument entry = new FoundDocument(absolutePath, isDirectory, fileType.getMimeType(), fileType.getCharsetName());
-                entryWriter.writeEntry(writer, entry);
+            if (documentStorage.isSameDocumentPath(absolutePath, indexPathTxt)) {
+                return;
             }
+
+            FileType fileType = detector.detectFileType(absolutePath);
+            if (fileType == null) {
+                fileType = FileType.UNKNOWN_FILE_TYPE;
+            }
+
+            FoundDocument entry = new FoundDocument(absolutePath, isDirectory, fileType.getMimeType(), fileType.getCharsetName());
+            entryWriter.writeEntry(writer, entry);
         });
 
     }

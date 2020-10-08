@@ -22,18 +22,12 @@ package wordhunt;
  */
 public class IndexValidator {
 
-    private SearchConfig config;
+    private final SearchConfig config;
     private final IndexStorage indexStorage;
 
     public IndexValidator(SearchConfig config, IndexStorage indexStorage) {
         this.config = config;
         this.indexStorage = indexStorage;
-    }
-
-    public void checkIndex() {
-        if (!indexExists()) {
-            throw new SearchException("Index file does not exist: " + getIndexAbsolutePath());
-        }
     }
 
     public boolean indexExists() {

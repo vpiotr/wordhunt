@@ -28,7 +28,7 @@ public class FileType {
     private final String mimeType;
     private final String charsetName;
 
-    public final static FileType UNKNOWN_FILE_TYPE = new FileType("", "");
+    public static final FileType UNKNOWN_FILE_TYPE = new FileType("", "");
 
     public FileType(String mimeType, String charsetName) {
         this.mimeType = mimeType;

@@ -39,7 +39,7 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
 
     @Override
     public FoundDocument next() {
-        String line = null;
+        String line;
 
         do {
             line = nextLine();
@@ -59,7 +59,7 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
         String[] result = null;
 
         if ((line != null) && line.startsWith(IndexConst.COMMENT_PREFIX)) {
-            String metaLine = line.substring(IndexConst.COMMENT_PREFIX.length(), line.length());
+            String metaLine = line.substring(IndexConst.COMMENT_PREFIX.length());
             if (metaLine.contains(IndexConst.META_SEPARATOR)) {
                 result = metaLine.split(IndexConst.META_SEPARATOR);
             }
@@ -73,7 +73,7 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
     }
 
     private String nextLine() {
-        String line = null;
+        String line;
 
         if (bufferedLine != null) {
             line = bufferedLine;
@@ -93,12 +93,11 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
     private FoundDocument parseEntryLine(String line) {
         String[] parts = line.split("\\" + IndexConst.ENTRY_FIELD_SEPARATOR);
 
-        boolean isDir = (parts.length >= 1) ? parts[0].equals(IndexConst.DIR_PREFIX) : false;
+        boolean isDir = (parts.length >= 1) && parts[0].equals(IndexConst.DIR_PREFIX);
         String relativePath = (parts.length >= 2) ? parts[1] : ".";
         String mimeType = (parts.length >= 3) ? parts[2] : "";
         String charsetName = (parts.length >= 4) ? parts[3] : "";
 
-        FoundDocument entry = new FoundDocument(relativePath, isDir, mimeType, charsetName);
-        return entry;
+        return new FoundDocument(relativePath, isDir, mimeType, charsetName);
     }
 }

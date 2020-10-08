@@ -25,7 +25,7 @@ import java.util.Arrays;
  *
  * @author piotr
  */
-public class FileUtils {
+public final class FileUtils {
 
     /**
      * Read part of file as byte array.
@@ -41,7 +41,7 @@ public class FileUtils {
         }
 
         byte[] bFile = new byte[targetLen];
-        int bytesRead = 0;
+        int bytesRead;
 
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             bytesRead = fileInputStream.read(bFile);

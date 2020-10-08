@@ -22,13 +22,9 @@ package wordhunt;
  */
 public class FilePathMatcher extends BaseFileMatcher {
 
-    private final static String CTX_PATH_WORDS_FILE = "path_words_file";
-    private final static String CTX_PATH_WORDS_PATH = "path_words_path";
+    private static final String CTX_PATH_WORDS_FILE = "path_words_file";
+    private static final String CTX_PATH_WORDS_PATH = "path_words_path";
     private final DocumentStorage documentStorage;
-
-    public FilePathMatcher(SearchConfig config, DocumentStorageViaFiles documentStorage) {
-        this(config, null, documentStorage);
-    }
 
     public FilePathMatcher(SearchConfig config, SearchMatcher nextMatcher, DocumentStorage documentStorage) {
         super(config, nextMatcher);

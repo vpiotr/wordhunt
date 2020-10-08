@@ -23,8 +23,7 @@ class MatcherUtilsTest {
     @Test
     void prepareWordsFromTerms() {
         String[] actual = MatcherUtils.prepareWordsFromTerms(TEST_TERMS_INPUT);
-        String[] expected = TEST_TERMS_SEP;
-        assertArrayEquals(expected, actual);
+        assertArrayEquals(TEST_TERMS_SEP, actual);
     }
 
     @Test

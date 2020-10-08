@@ -21,9 +21,7 @@ public class IndexStorageViaFiles implements IndexStorage {
 
     public OutputStreamWriter getWriterForIndexFile(String indexFilePath) {
         try {
-            return new OutputStreamWriter(new FileOutputStream(indexFilePath), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IndexAccessException(e);
+            return new OutputStreamWriter(new FileOutputStream(indexFilePath), StandardCharsets.UTF_8);
         } catch (FileNotFoundException e) {
             throw new IndexAccessException(e);
         }

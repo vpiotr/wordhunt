@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 
 class App {
 
+    private App() {}
+
     public static void main(String[] args) {
         boolean commandSyntaxOK = false;
         boolean returnFail = false;
@@ -72,7 +74,7 @@ class App {
         if (command.equals("--find") && args.length >= 3) {
             processFindCommand(args, false, args[1], 2);
             return true;
-        } else if (simpleMode && args.length >= 1) {
+        } else if (simpleMode) {
             processFindCommand(args, true,".", 0);
             return true;
         } else if (command.equals("--index") && args.length >= 2) {
@@ -95,7 +97,7 @@ class App {
         validateDir(searchDir);
         SearchConfig config = parseOptions(args, simpleMode, searchDir, optionIndex);
         validateTerms(config);
-        performFind(config, simpleMode);
+        performFind(config);
     }
 
     private static SearchConfig parseOptions(String[] args, boolean simpleMode, String dirName, int startIndex) {
@@ -151,9 +153,7 @@ class App {
             } else if ("--incontent".equals(value)) {
                 parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_CONTENT);
                 i++;
-            } else if (SearchConst.OPT_ENABLE_DEBUG.equals(value)) {
-                // do nothing
-            } else {
+            } else if (!SearchConst.OPT_ENABLE_DEBUG.equals(value)) {
                 String[] anyTerms = Arrays.copyOfRange(args, i, args.length);
                 anyTerms = ArrayUtils.merge(anyTerms, getTermsInConfig(result, SearchConst.CFG_SEARCH_TERMS_PATH));
                 setTermsInConfig(anyTerms, result, SearchConst.CFG_SEARCH_TERMS_PATH);
@@ -211,7 +211,7 @@ class App {
     private static Map<String, String[]> prepareTermsMap(SearchConfig config) {
         Map<String, String[]> termMap = (Map<String, String[]>) config.getValue(SearchConst.CFG_SEARCH_TERMS);
         if (termMap == null) {
-            termMap = new HashMap<String, String[]>();
+            termMap = new HashMap<>();
             config.setValue(SearchConst.CFG_SEARCH_TERMS, termMap);
         }
         return termMap;
@@ -308,32 +308,32 @@ class App {
         System.out.println(message);
     }
 
-    private static void showException(String message, Throwable e, boolean showStack) {
-        System.err.println(message + " " + e.getMessage());
+    private static void showException(String message, Throwable exception, boolean showStack) {
+        Throwable exceptionToBeUsed = exception;
+        System.err.println(message + " " + exceptionToBeUsed.getMessage());
 
         if (!showStack) {
             return;
         }
 
         Throwable cause;
-        e.printStackTrace();
+        exceptionToBeUsed.printStackTrace();
 
-        while ((cause = e.getCause()) != null) {
+        while ((cause = exceptionToBeUsed.getCause()) != null) {
             System.err.println("Caused by: " + cause.getMessage());
             cause.printStackTrace();
-            e = cause;
+            exceptionToBeUsed = cause;
         }
     }
 
     private static boolean checkDir(String dirName) {
         File f = new File(dirName);
-        boolean result = (f.exists() && f.isDirectory());
-        return result;
+        return (f.exists() && f.isDirectory());
     }
 
-    private static void performFind(SearchConfig config, boolean simpleMode) {
+    private static void performFind(SearchConfig config) {
         String dirName = (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
-        boolean list = Boolean.TRUE.equals((Boolean) config.getValue(SearchConst.CFG_SEARCH_BRIEF));
+        boolean list = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_BRIEF));
         String[] allTerms = getAllTerms(config);
 
         if (!list) {
@@ -351,10 +351,9 @@ class App {
 
     @SuppressWarnings("unchecked")
     private static SearchTerms buildTerms(SearchConfig config) {
-        SearchTerms result = SearchTerms.builder().
+        return SearchTerms.builder().
                 terms((Map<String, String[]>) config.getValue(SearchConst.CFG_SEARCH_TERMS)).
                 build();
-        return result;
     }
 
     private static void performIndex(SearchConfig config) {
@@ -378,10 +377,10 @@ class App {
         return result;
     }
 
-    private static class SearchStrategyUsingPreparedIndex {
-        private SearchConfig config;
+    private static final class SearchStrategyUsingPreparedIndex {
+        private final SearchConfig config;
 
-        public SearchStrategyUsingPreparedIndex(SearchConfig config) {
+        SearchStrategyUsingPreparedIndex(SearchConfig config) {
             this.config = config;
         }
 

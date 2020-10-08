@@ -20,10 +20,10 @@ package wordhunt;
  * 
  * @author piotr
  */
-public class MimeConst {
+public final class MimeConst {
 
-    public final static String PLAIN_TEXT = "text/plain";
-    public final static String TEXT_PREFIX = "text/";
+    public static final String PLAIN_TEXT = "text/plain";
+    public static final String TEXT_PREFIX = "text/";
     public static final String JSON_TYPE = "application/json";
     public static final String XML_TYPE = "application/xml";
     public static final String PDF_TYPE = "application/pdf";

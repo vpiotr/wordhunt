@@ -13,7 +13,7 @@ public class OnflySearcher implements DocumentSearcher {
         SearchContext context = newSearchContext();
         matcher.prepare(terms, context);
         String dirName = (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
-        new FileWalker().walk(dirName, (String absolutePath, boolean isDirectory) -> { processEntry(absolutePath, isDirectory, context, matcher, consumer);});
+        new FileWalker().walk(dirName, (String absolutePath, boolean isDirectory) -> processEntry(absolutePath, isDirectory, context, matcher, consumer));
     }
 
     private void processEntry(String absolutePath, boolean isDirectory, SearchContext context, SearchMatcher matcher, SearchConsumer consumer) {
