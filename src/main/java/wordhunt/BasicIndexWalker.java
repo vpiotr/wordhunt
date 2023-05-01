@@ -24,6 +24,10 @@ import java.io.IOException;
  */
 public class BasicIndexWalker implements IndexWalker, AutoCloseable {
 
+    private static final int FIELD_INDEX_DIR_PREFIX = 0;
+    private static final int FIELD_INDEX_RELATIVE_PATH = 1;
+    private static final int FIELD_INDEX_MIME_TYPE = 2;
+    private static final int FIELD_INDEX_CHARSET_NAME = 3;
     private final BufferedReader reader;
 
     private String bufferedLine;
@@ -93,10 +97,10 @@ public class BasicIndexWalker implements IndexWalker, AutoCloseable {
     private FoundDocument parseEntryLine(String line) {
         String[] parts = line.split("\\" + IndexConst.ENTRY_FIELD_SEPARATOR);
 
-        boolean isDir = (parts.length >= 1) && parts[0].equals(IndexConst.DIR_PREFIX);
-        String relativePath = (parts.length >= 2) ? parts[1] : ".";
-        String mimeType = (parts.length >= 3) ? parts[2] : "";
-        String charsetName = (parts.length >= 4) ? parts[3] : "";
+        boolean isDir = (parts.length > FIELD_INDEX_DIR_PREFIX) && parts[FIELD_INDEX_DIR_PREFIX].equals(IndexConst.DIR_PREFIX);
+        String relativePath = (parts.length > FIELD_INDEX_RELATIVE_PATH) ? parts[FIELD_INDEX_RELATIVE_PATH] : ".";
+        String mimeType = (parts.length > FIELD_INDEX_MIME_TYPE) ? parts[FIELD_INDEX_MIME_TYPE] : "";
+        String charsetName = (parts.length > FIELD_INDEX_CHARSET_NAME) ? parts[FIELD_INDEX_CHARSET_NAME] : "";
 
         return new FoundDocument(relativePath, isDir, mimeType, charsetName);
     }

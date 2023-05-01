@@ -34,14 +34,16 @@ import java.util.regex.Matcher;
 public final class MatcherUtils {
 
     private static final Pattern WORD_PATTERN = Pattern.compile("[\\w']+");
-    
+    private static final String CHAR_SPLIT_WORDS_PATTERN = "[\\-_\\.]";
+    private static final String CASE_SPLIT_PATTERN = "(?=\\p{Lu})";
+
     public static String[] prepareWordsFromTerms(String[] words) {
         return prepareWordsFromTerms(words, false);
     }
 
     public static String[] prepareWordsFromTerms(String[] words, boolean caseSensitive) {
         if (words == null) {
-            return null;
+            return new String[0];
         }
 
         List<String> newWords = new ArrayList<>();
@@ -100,14 +102,14 @@ public final class MatcherUtils {
             if (caseWordSplit) {
                 addCaseSplitWords(word, caseSensitive, result);
             }
-            addCharSplitWords(word, "[\\-_\\.]", caseSensitive, result);
+            addCharSplitWords(word, CHAR_SPLIT_WORDS_PATTERN, caseSensitive, result);
         }
 
         return result;
     }
 
     private static void addCaseSplitWords(String word, boolean caseSensitive, Collection<String> output) {
-        String[] caseWords = word.split("(?=\\p{Lu})");
+        String[] caseWords = word.split(CASE_SPLIT_PATTERN);
         for (String cword : caseWords) {
             output.add(caseSensitive ? cword : cword.toUpperCase(Locale.getDefault()));
         }

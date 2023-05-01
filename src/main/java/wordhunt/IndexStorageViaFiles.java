@@ -36,7 +36,11 @@ public class IndexStorageViaFiles implements IndexStorage {
     }
 
     public void removeIndex(String indexAbsolutePath) {
-        new File(indexAbsolutePath).delete();
+        try {
+            Files.delete(Paths.get(indexAbsolutePath));
+        } catch (IOException e) {
+            throw new IndexAccessException("Index deletion failed, path: " + indexAbsolutePath, e);
+        }
     }
 
     public boolean indexExists(String indexAbsolutePath) {

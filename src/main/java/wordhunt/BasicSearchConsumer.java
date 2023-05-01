@@ -15,6 +15,8 @@ limitations under the License.
  */
 package wordhunt;
 
+import java.util.function.Consumer;
+
 /**
  * Displays found files on screen.
  * @author piotr
@@ -23,19 +25,21 @@ public class BasicSearchConsumer implements SearchConsumer {
 
     private final boolean formatAsListing;
     private final DocumentStorage documentStorage;
+    private final Consumer<String> searchOutput;
 
-    public BasicSearchConsumer(SearchConfig config, DocumentStorage documentStorage) {
+    public BasicSearchConsumer(SearchConfig config, DocumentStorage documentStorage, Consumer<String> searchOutput) {
         this.formatAsListing = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_BRIEF));
         this.documentStorage = documentStorage;
+        this.searchOutput = searchOutput;
     }
 
     @Override
     public void handle(String absolutePath) {
         if (documentStorage.documentExists(absolutePath)) {
             if (formatAsListing) {
-                System.out.println(absolutePath);
+                searchOutput.accept(absolutePath);
             } else {
-                System.out.println("Found: " + absolutePath);
+                searchOutput.accept("Found: " + absolutePath);
             }
         }
     }

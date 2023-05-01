@@ -34,7 +34,7 @@ public abstract class BaseFileMatcher implements SearchMatcher {
     private final boolean includeDirs;
     private final boolean caseWordSplit;
 
-    public BaseFileMatcher(SearchConfig config, SearchMatcher nextMatcher) {
+    protected BaseFileMatcher(SearchConfig config, SearchMatcher nextMatcher) {
         this.config = config;
         this.nextMatcher = nextMatcher;
 

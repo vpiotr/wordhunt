@@ -30,16 +30,6 @@ public final class FilePathUtils {
     }
 
     /**
-     * Extract file directory from file path
-     *
-     * @param filePath
-     * @return directory path
-     */
-    public static String extractFileDir(String filePath) {
-        return new File(filePath).getParent();
-    }
-
-    /**
      * Build full path from root directory and maybe relative file path
      *
      * @param rootPath

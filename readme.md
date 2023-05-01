@@ -41,7 +41,7 @@ Example of usage:
   
 Syntax
 --------------------
-Usage: wordhunt COMMAND DIRECTORY [OPTIONS] [WORD-LIST]
+Usage: `wordhunt COMMAND DIRECTORY [OPTIONS] [WORD-LIST]`
 
 Search for words from WORD-LIST in files stored inside the specified DIRECTORY.
 

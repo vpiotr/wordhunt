@@ -27,6 +27,9 @@ import java.io.File;
  */
 public class TextFileTypeDetector implements FileTypeDetector {
 
+    private static final int ASCII_CODE_TAB = 9;
+    private static final int ASCII_CODE_NL = 10;
+    private static final int ASCII_CODE_CR = 13;
     private final FileTypeDetector nextDetector;
     private static final int DEFAULT_SAMPLE_LEN = 5000;
     private final int maxSampleLength;
@@ -63,27 +66,20 @@ public class TextFileTypeDetector implements FileTypeDetector {
     }
 
     private boolean isPlainTextData(byte[] data) {
-        boolean result = true;
-
-        int b;
-
-        loop:
         for (byte a: data) {
-            b = a & 0xFF;
-            if (b < 32) {
-                switch (b) {
-                    case 9:
-                    case 10:
-                    case 13:
+            if (a >= 0 && a < ' ') {
+                switch (a) {
+                    case ASCII_CODE_TAB:
+                    case ASCII_CODE_NL:
+                    case ASCII_CODE_CR:
                         continue;
                     default:
-                        result = false;
-                        break loop;
+                        return false;
                 } // switch
             } // if
         } // for
 
-        return result;
+        return true;
     }
 
     private FileType detectByNext(String absolutePath) {

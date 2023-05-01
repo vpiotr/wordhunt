@@ -17,6 +17,7 @@ package wordhunt;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * Performs search using provided terms and index file.
@@ -28,11 +29,13 @@ public class IndexedDocumentSearcher implements DocumentSearcher {
     private final SearchConfig config;
     private final IndexWalkerFactory indexWalkerFactory;
     private final DocumentStorage documentStorage;
+    private final Consumer<String> searchOutput;
 
-    public IndexedDocumentSearcher(SearchConfig config, IndexWalkerFactory indexWalkerFactory, DocumentStorage documentStorage) {
+    public IndexedDocumentSearcher(SearchConfig config, IndexWalkerFactory indexWalkerFactory, DocumentStorage documentStorage, Consumer<String> searchOutput) {
         this.config = config;
         this.indexWalkerFactory = indexWalkerFactory;
         this.documentStorage = documentStorage;
+        this.searchOutput = searchOutput;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class IndexedDocumentSearcher implements DocumentSearcher {
 
         boolean list = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_BRIEF));
         if (!list) {
-            System.out.println("Searching in index file: " + indexFile);
+            searchOutput.accept("Searching in index file: " + indexFile);
         }
 
         matcher.prepare(terms, context);

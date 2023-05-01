@@ -17,6 +17,8 @@ package wordhunt;
 
 import java.util.Objects;
 
+import static java.util.Objects.hash;
+
 /**
  * Contains file type information - everything we know about the file required
  * for reading it.
@@ -63,9 +65,6 @@ public class FileType {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 89 * hash + Objects.hashCode(this.mimeType);
-        hash = 89 * hash + Objects.hashCode(this.charsetName);
-        return hash;
+        return Objects.hash(this.mimeType, this.charsetName);
     }
 }

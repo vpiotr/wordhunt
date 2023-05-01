@@ -50,9 +50,7 @@ public class FilePathMatcher extends BaseFileMatcher {
 
         String filePath = entry.getFilePath();
 
-        Boolean matchedStatus = null;
-
-        matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_PATH, filePath, matchedStatus);
+        Boolean matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_PATH, filePath);
 
         matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_FILE,
                 FilePathUtils.extractFileName(filePath), matchedStatus);
@@ -76,9 +74,7 @@ public class FilePathMatcher extends BaseFileMatcher {
 
         String filePath = FilePathUtils.absoluteToRelativePath(absolutePath, getSearchRootDir());
 
-        Boolean matchedStatus = null;
-
-        matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_PATH, filePath, matchedStatus);
+        Boolean matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_PATH, filePath);
 
         matchedStatus = fileMatchesWordsFromContext(context, CTX_PATH_WORDS_FILE,
                 FilePathUtils.extractFileName(filePath), matchedStatus);
@@ -92,6 +88,11 @@ public class FilePathMatcher extends BaseFileMatcher {
         }
 
         return Boolean.TRUE.equals(matchedStatus);
+    }
+
+    private Boolean fileMatchesWordsFromContext(SearchContext context,
+                                                String contextName, String filePath) {
+        return fileMatchesWordsFromContext(context, contextName, filePath, null);
     }
 
     private Boolean fileMatchesWordsFromContext(SearchContext context,

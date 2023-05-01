@@ -18,6 +18,7 @@ package wordhunt;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.function.Consumer;
 
 
 /**
@@ -33,14 +34,17 @@ public class FileIndexer {
     private final IndexEntryWriter entryWriter;
     private final IndexStorage indexStorage;
     private final DocumentStorage documentStorage;
+    private final Consumer<String> indexingOutput;
 
-    public FileIndexer(SearchConfig config, String dirName, FileTypeDetector detector, IndexEntryWriter entryWriter, IndexStorage indexStorage, DocumentStorage documentStorage) {
+    public FileIndexer(SearchConfig config, String dirName, FileTypeDetector detector, IndexEntryWriter entryWriter,
+                       IndexStorage indexStorage, DocumentStorage documentStorage, Consumer<String> indexingOutput) {
         this.config = config;
         this.dirName = dirName;
         this.detector = detector;
         this.entryWriter = entryWriter;
         this.indexStorage = indexStorage;
         this.documentStorage = documentStorage;
+        this.indexingOutput = indexingOutput;
     }
 
     public void rebuildIndex() {
@@ -55,36 +59,19 @@ public class FileIndexer {
             throw new SearchException("Cannot create an index file - already exists: [" + getIndexAbsolutePath() + "]");
         }
 
-        BufferedWriter bw = null;
-        Writer writer = null;
-
         try {
             String fileName = getIndexAbsolutePath();
 
-            writer = indexStorage.getWriterForIndexFile(fileName);
-            bw = new BufferedWriter(writer);
+            try (Writer writer = indexStorage.getWriterForIndexFile(fileName)) {
+                try (BufferedWriter bw = new BufferedWriter(writer)) {
+                    buildIndex(bw);
+                }
+            }
 
-            buildIndex(bw);
-
-            show("Index created");
+            indexingOutput.accept("Index created");
 
         } catch (IOException ioe) {
             throw new SearchException("IO error: " + ioe.getMessage(), ioe);
-        } finally {
-
-            try {
-
-                if (bw != null) {
-                    bw.close();
-                }
-
-                if (writer != null) {
-                    writer.close();
-                }
-
-            } catch (IOException cex) {
-                throw new SearchException("IO error: " + cex.getMessage(), cex);
-            }
         }
     }
 
@@ -132,7 +119,4 @@ public class FileIndexer {
         return (String) config.getValue(SearchConst.CFG_INDEX_FILE_PATH);
     }
 
-    private void show(String message) {
-        System.out.println(message);
-    }
 }

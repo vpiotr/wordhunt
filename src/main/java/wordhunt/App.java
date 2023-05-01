@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 
 class App {
 
+    public static final int MIN_FIND_ARGUMENT_COUNT = 3;
+
     private App() {}
 
     public static void main(String[] args) {
@@ -62,16 +64,12 @@ class App {
     private static boolean processCommand(String[] args) {
 
         String command = args[0];
-        boolean simpleMode = false;
-
-        if (!command.equals("--index")
+        boolean simpleMode = !command.equals("--index")
                 && !command.equals("--find")
                 && !command.equals("--help")
-                && !command.equals("--version")) {
-            simpleMode = true;
-        }
+                && !command.equals("--version");
 
-        if (command.equals("--find") && args.length >= 3) {
+        if (command.equals("--find") && args.length >= MIN_FIND_ARGUMENT_COUNT) {
             processFindCommand(args, false, args[1], 2);
             return true;
         } else if (simpleMode) {
@@ -239,7 +237,7 @@ class App {
     }
 
     private static void showHelp(boolean longDescription) {
-        System.out.println("Usage: wordhunt COMMAND DIRECTORY [OPTIONS] [WORD-LIST]");
+        writeLineToConsole("Usage: wordhunt COMMAND DIRECTORY [OPTIONS] [WORD-LIST]");
         if (longDescription) {
             String[] syntax = new String[]{
                 "Examples:",
@@ -278,16 +276,16 @@ class App {
             };
 
             for (String line : syntax) {
-                System.out.println(line);
+                writeLineToConsole(line);
             }
         } else {
-            System.out.println("Try 'wordhunt --help' for more information.");
+            writeLineToConsole("Try 'wordhunt --help' for more information.");
         }
     }
 
     private static void showVersion() {
 
-        System.out.println("wordhunt version " + getVersionString());
+        writeLineToConsole("wordhunt version " + getVersionString());
 
         String[] licenseInfo = new String[]{
             "Copyright (C) 2020 Piotr Likus",
@@ -296,7 +294,7 @@ class App {
         };
 
         for (String line : licenseInfo) {
-            System.out.println(line);
+            writeLineToConsole(line);
         }
     }
 
@@ -304,13 +302,9 @@ class App {
         return App.class.getPackage().getImplementationVersion();
     }
 
-    private static void show(String message) {
-        System.out.println(message);
-    }
-
     private static void showException(String message, Throwable exception, boolean showStack) {
         Throwable exceptionToBeUsed = exception;
-        System.err.println(message + " " + exceptionToBeUsed.getMessage());
+        writeErrorToConsole(message + " " + exceptionToBeUsed.getMessage());
 
         if (!showStack) {
             return;
@@ -320,7 +314,7 @@ class App {
         exceptionToBeUsed.printStackTrace();
 
         while ((cause = exceptionToBeUsed.getCause()) != null) {
-            System.err.println("Caused by: " + cause.getMessage());
+            writeErrorToConsole("Caused by: " + cause.getMessage());
             cause.printStackTrace();
             exceptionToBeUsed = cause;
         }
@@ -337,7 +331,7 @@ class App {
         String[] allTerms = getAllTerms(config);
 
         if (!list) {
-            show(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
+            writeLineToConsole(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
         }
 
         IndexStorage indexStorage = new IndexStorageViaFiles();
@@ -358,10 +352,11 @@ class App {
 
     private static void performIndex(SearchConfig config) {
         String dirName = (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
-        show(String.format("Performing 'index' in dir [%s]", dirName));
+        writeLineToConsole(String.format("Performing 'index' in dir [%s]", dirName));
         DocumentStorage documentStorage = new DocumentStorageViaFiles();
         IndexStorage indexStorage = new IndexStorageViaFiles();
-        FileIndexer fi = new FileIndexer(config, dirName, new TextFileTypeDetector(), new BasicIndexEntryWriter(dirName), indexStorage, documentStorage);
+        FileIndexer fi = new FileIndexer(config, dirName, new TextFileTypeDetector(), new BasicIndexEntryWriter(dirName),
+                indexStorage, documentStorage, App::writeLineToConsole);
         fi.rebuildIndex();
     }
 
@@ -377,7 +372,18 @@ class App {
         return result;
     }
 
+    @SuppressWarnings("java:S106")
+    private static void writeLineToConsole(String line) {
+        System.out.println(line);
+    }
+
+    @SuppressWarnings("java:S106")
+    private static void writeErrorToConsole(String line) {
+        System.err.println(line);
+    }
+
     private static final class SearchStrategyUsingPreparedIndex {
+
         private final SearchConfig config;
 
         SearchStrategyUsingPreparedIndex(SearchConfig config) {
@@ -388,14 +394,15 @@ class App {
             SearchTerms searchTerms = buildTerms(config);
             DocumentStorage documentStorage = new DocumentStorageViaFiles();
             IndexStorage indexStorage = new IndexStorageViaFiles();
-            DocumentSearcher searcher = new IndexedDocumentSearcher(config, new BasicIndexWalkerFactory(indexStorage), documentStorage);
-            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage);
+            DocumentSearcher searcher = new IndexedDocumentSearcher(config, new BasicIndexWalkerFactory(indexStorage),
+                    documentStorage, App::writeLineToConsole);
+            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, App::writeLineToConsole);
             SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
             searcher.search(searchTerms, matcher, consumer);
         }
     }
-
     private static class SearchStrategyWithoutIndex {
+
         private final SearchConfig config;
 
         private SearchStrategyWithoutIndex(SearchConfig config) {
@@ -406,7 +413,7 @@ class App {
             SearchTerms searchTerms = buildTerms(config);
             DocumentStorage documentStorage = new DocumentStorageViaFiles();
             OnflySearcher searcher = new OnflySearcher(config);
-            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage);
+            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, App::writeLineToConsole);
             SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
             searcher.search(searchTerms, matcher, consumer);
         }

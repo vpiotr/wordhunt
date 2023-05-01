@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Checks if file contains in it's body required words.
+ * Checks if file contains in its body required words.
  * @author piotr
  */
 public class FileContentMatcher extends BaseFileMatcher {
@@ -98,7 +98,7 @@ public class FileContentMatcher extends BaseFileMatcher {
         }
 
         if (!canHandleContent(entry.getMimeType(), entry.getCharsetName())) {
-            // there are some words to match but we cannot check them
+            // there are some words to match, but we cannot check them
             return Boolean.FALSE;
         }
 

@@ -8,17 +8,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MatcherUtilsTest {
 
-    private final String[] TEST_TERMS_INPUT = new String[] {"Hello, world! prepareWords fast.", "terms"};
-    private final String[] TEST_TERMS_SEP = new String[] {"HELLO", "WORLD", "PREPAREWORDS", "FAST", "TERMS"};
-    private final String TEST_TEXT = "Lorem ipsum dictumst volutpat vel";
-    private final String[] TEST_TEXT_WORDS = new String[] {"Lorem", "ipsum", "dictumst", "volutpat", "vel"};
-    private final String[] TEST_TEXT_WORDS_SEL_UP = new String[] {"LOREM", "IPSUM", "DICTUMST", "VOLUTPAT", "VEL"};
-    private final String[] TEST_TEXT_WORDS_STRIP = new String[] {"Lorem", "ipsum", "volutpat", "vel", "additional"};
-    private final String TEST_TEXT_WORDS_STRIP_OUT = "additional";
+    private static final String[] TEST_TERMS_INPUT = new String[] {"Hello, world! prepareWords fast.", "terms"};
+    private static final String[] TEST_TERMS_SEP = new String[] {"HELLO", "WORLD", "PREPAREWORDS", "FAST", "TERMS"};
+    private static final String TEST_TEXT = "Lorem ipsum dictumst volutpat vel";
+    private static final String[] TEST_TEXT_WORDS = new String[] {"Lorem", "ipsum", "dictumst", "volutpat", "vel"};
+    private static final String[] TEST_TEXT_WORDS_SEL_UP = new String[] {"LOREM", "IPSUM", "DICTUMST", "VOLUTPAT", "VEL"};
+    private static final String[] TEST_TEXT_WORDS_STRIP = new String[] {"Lorem", "ipsum", "volutpat", "vel", "additional"};
+    private static final String TEST_TEXT_WORDS_STRIP_OUT = "additional";
 
-    private final String TEST_TEXT_WITH_TERMS = "LoremIpsum dictumst volutpatVel.";
-    private final String[] TEST_TEXT_WORDS_FROM_TERMS_CASE_SENS = new String[] {"Lorem", "Ipsum", "dictumst", "volutpat", "Vel", "volutpatVel", "LoremIpsum"};
-    private final String[] TEST_TEXT_WORDS_FROM_TERMS_CASE_INSENS = new String[] {"LOREM", "IPSUM", "DICTUMST", "VOLUTPAT", "VEL", "VOLUTPATVEL", "LOREMIPSUM"};
+    private static final String TEST_TEXT_WITH_TERMS = "LoremIpsum dictumst volutpatVel.";
+    private static final String[] TEST_TEXT_WORDS_FROM_TERMS_CASE_SENS = new String[] {"Lorem", "Ipsum", "dictumst", "volutpat", "Vel", "volutpatVel", "LoremIpsum"};
+    private static final String[] TEST_TEXT_WORDS_FROM_TERMS_CASE_INSENS = new String[] {"LOREM", "IPSUM", "DICTUMST", "VOLUTPAT", "VEL", "VOLUTPATVEL", "LOREMIPSUM"};
 
     @Test
     void prepareWordsFromTerms() {
