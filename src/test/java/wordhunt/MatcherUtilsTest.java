@@ -40,7 +40,7 @@ class MatcherUtilsTest {
 
     @Test
     void stripMatchingWordsWithAdditional() {
-        List<String> expected = Arrays.asList(TEST_TEXT_WORDS_STRIP_OUT);
+        List<String> expected = Collections.singletonList(TEST_TEXT_WORDS_STRIP_OUT);
         List<String> actual = MatcherUtils.stripMatchingWords(TEST_TEXT_WORDS_STRIP, TEST_TEXT, true, true);
         assertEquals(expected, actual);
     }

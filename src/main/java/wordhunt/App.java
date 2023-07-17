@@ -336,10 +336,13 @@ class App {
 
         IndexStorage indexStorage = new IndexStorageViaFiles();
         IndexValidator iv = new IndexValidator(config, indexStorage);
+        SearchTerms searchTerms = buildTerms(config);
         if (iv.indexExists()) {
-            new SearchStrategyUsingPreparedIndex(config).invoke();
+            final SearchStrategyUsingPreparedIndex searchStrategyUsingPreparedIndex = new SearchStrategyUsingPreparedIndex(config, App::writeLineToConsole);
+            searchStrategyUsingPreparedIndex.invoke(searchTerms);
         } else {
-            new SearchStrategyWithoutIndex(config).invoke();
+            final SearchStrategyWithoutIndex searchStrategyWithoutIndex = new SearchStrategyWithoutIndex(config, App::writeLineToConsole);
+            searchStrategyWithoutIndex.invoke(searchTerms);
         }
     }
 
@@ -382,40 +385,4 @@ class App {
         System.err.println(line);
     }
 
-    private static final class SearchStrategyUsingPreparedIndex {
-
-        private final SearchConfig config;
-
-        SearchStrategyUsingPreparedIndex(SearchConfig config) {
-            this.config = config;
-        }
-
-        public void invoke() {
-            SearchTerms searchTerms = buildTerms(config);
-            DocumentStorage documentStorage = new DocumentStorageViaFiles();
-            IndexStorage indexStorage = new IndexStorageViaFiles();
-            DocumentSearcher searcher = new IndexedDocumentSearcher(config, new BasicIndexWalkerFactory(indexStorage),
-                    documentStorage, App::writeLineToConsole);
-            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, App::writeLineToConsole);
-            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
-            searcher.search(searchTerms, matcher, consumer);
-        }
-    }
-    private static class SearchStrategyWithoutIndex {
-
-        private final SearchConfig config;
-
-        private SearchStrategyWithoutIndex(SearchConfig config) {
-            this.config = config;
-        }
-
-        public void invoke() {
-            SearchTerms searchTerms = buildTerms(config);
-            DocumentStorage documentStorage = new DocumentStorageViaFiles();
-            OnflySearcher searcher = new OnflySearcher(config);
-            SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, App::writeLineToConsole);
-            SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
-            searcher.search(searchTerms, matcher, consumer);
-        }
-    }
 }

@@ -128,7 +128,7 @@ public class FileContentMatcher extends BaseFileMatcher {
 
 
     private boolean canHandleContent(String mimeType, String charsetName) {
-        return MimeUtils.isTextType(mimeType) && (charsetName.length() > 0);
+        return MimeUtils.isTextType(mimeType) && (!charsetName.isEmpty());
     }
 
     private String[] stripMatchingWords(String[] words, String filePath) {

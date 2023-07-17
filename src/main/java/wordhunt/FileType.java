@@ -17,8 +17,6 @@ package wordhunt;
 
 import java.util.Objects;
 
-import static java.util.Objects.hash;
-
 /**
  * Contains file type information - everything we know about the file required
  * for reading it.

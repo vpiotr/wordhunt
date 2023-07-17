@@ -65,7 +65,7 @@ public class TextFileTypeDetector implements FileTypeDetector {
         return detectByNext(absolutePath);
     }
 
-    private boolean isPlainTextData(byte[] data) {
+    boolean isPlainTextData(byte[] data) {
         for (byte a: data) {
             if (a >= 0 && a < ' ') {
                 switch (a) {
