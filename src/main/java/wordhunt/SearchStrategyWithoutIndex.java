@@ -13,7 +13,7 @@ class SearchStrategyWithoutIndex {
     public void invoke(SearchTerms searchTerms) {
         DocumentStorage documentStorage = new DocumentStorageViaFiles();
         OnflySearcher searcher = new OnflySearcher(config);
-        SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, processLog::writeLineToConsole);
+        SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, processLog::writeLine);
         SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
         searcher.search(searchTerms, matcher, consumer);
     }

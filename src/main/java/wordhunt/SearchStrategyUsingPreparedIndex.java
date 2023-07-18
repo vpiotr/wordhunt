@@ -14,8 +14,8 @@ final class SearchStrategyUsingPreparedIndex {
         DocumentStorage documentStorage = new DocumentStorageViaFiles();
         IndexStorage indexStorage = new IndexStorageViaFiles();
         DocumentSearcher searcher = new IndexedDocumentSearcher(config, new BasicIndexWalkerFactory(indexStorage),
-                documentStorage, processLog::writeLineToConsole);
-        SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, processLog::writeLineToConsole);
+                documentStorage, processLog::writeLine);
+        SearchConsumer consumer = new BasicSearchConsumer(config, documentStorage, processLog::writeLine);
         SearchMatcher matcher = new FilePathMatcher(config, new FileContentMatcher(config, new TextFileTypeDetector(), documentStorage), documentStorage);
         searcher.search(searchTerms, matcher, consumer);
     }
