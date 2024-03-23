@@ -49,4 +49,27 @@ class ArrayUtilsTest {
         Integer [] actual = ArrayUtils.merge(arr1, null);
         assertArrayEquals(expected, actual);
     }
+
+    @Test
+    void mergeOfNullAndEmpty() {
+        Integer [] arr2 = new Integer[0];
+        Integer [] expected = new Integer[0];
+        Integer [] actual = ArrayUtils.merge(null, arr2);
+        assertArrayEquals(expected, actual);
+    }
+    
+    @Test
+    void mergeOfEmptyAndNull() {
+        Integer [] arr1 = new Integer[0];
+        Integer [] expected = new Integer[0];
+        Integer [] actual = ArrayUtils.merge(arr1, null);
+        assertArrayEquals(expected, actual);
+    }
+    
+    @Test
+    void mergeOfBothNull() {
+        Integer [] expected = null;
+        Integer [] actual = ArrayUtils.merge(null, null);
+        assertArrayEquals(expected, actual);
+    }    
 }

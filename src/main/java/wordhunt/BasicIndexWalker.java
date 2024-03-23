@@ -22,7 +22,7 @@ import java.io.IOException;
  * Allows scanning of index file in iterator-like way. 
  * @author piotr
  */
-public class BasicIndexWalker implements IndexWalker, AutoCloseable {
+public class BasicIndexWalker implements IndexWalker {
 
     private static final int FIELD_INDEX_DIR_PREFIX = 0;
     private static final int FIELD_INDEX_RELATIVE_PATH = 1;
