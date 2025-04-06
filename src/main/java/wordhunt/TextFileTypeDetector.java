@@ -45,19 +45,19 @@ public class TextFileTypeDetector implements FileTypeDetector {
 
     @Override
     public FileType detectFileType(String absolutePath) {
-        Path path = Paths.get(absolutePath);
+        var path = Paths.get(absolutePath);
         if (!Files.isReadable(path)) {
             return detectByNext(absolutePath);
         }
 
-        File file = new File(absolutePath);
+        var file = new File(absolutePath);
 
         if (!file.isDirectory()) {
-            byte[] data = FileUtils.readFileSampleIntoByteArray(file, this.maxSampleLength);
+            var data = FileUtils.readFileSampleIntoByteArray(file, this.maxSampleLength);
 
             if (isPlainTextData(data)) {
-                String mimeType = MimeConst.PLAIN_TEXT;
-                String charsetName = CharsetUtils.detectCharsetName(data);
+                var mimeType = MimeConst.PLAIN_TEXT;
+                var charsetName = CharsetUtils.detectCharsetName(data);
                 return new FileType(mimeType, charsetName);
             }
         }
@@ -72,12 +72,12 @@ public class TextFileTypeDetector implements FileTypeDetector {
                     case ASCII_CODE_TAB:
                     case ASCII_CODE_NL:
                     case ASCII_CODE_CR:
-                        continue;
+                        break;
                     default:
                         return false;
-                } // switch
-            } // if
-        } // for
+                }
+            }
+        }
 
         return true;
     }
@@ -89,5 +89,4 @@ public class TextFileTypeDetector implements FileTypeDetector {
             return null;
         }
     }
-
 }

@@ -16,6 +16,8 @@ limitations under the License.
 package wordhunt;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Utility functions for arrays.
@@ -32,28 +34,22 @@ public final class ArrayUtils {
      * @return joined arrays or null if both are null.
      */
     public static <T> T[] merge(T[] first, T[] second) {
-        T[] result;
-
-        if (first != null) {
-            if (second == null) {
-                result = Arrays.copyOf(first, first.length);
-            } else {
-                result = Arrays.copyOf(first, first.length + second.length);
-            }
-        } else {
-            result = null;
+        // If both arrays are null, return null
+        if (first == null && second == null) {
+            return null;
         }
-
+        
+        // If either array is null, return the other (possibly empty) array
+        if (first == null) {
+            return second;
+        }
         if (second == null) {
-            return result;
+            return Arrays.copyOf(first, first.length);
         }
-
-        if (result == null) {
-            result = second;
-        } else {
-            System.arraycopy(second, 0, result, first.length, second.length);
-        }
-
+        
+        // Otherwise merge both arrays
+        var result = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
         return result;
     }
 

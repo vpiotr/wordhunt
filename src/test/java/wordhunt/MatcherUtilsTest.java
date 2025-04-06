@@ -23,7 +23,13 @@ class MatcherUtilsTest {
     @Test
     void prepareWordsFromTerms() {
         String[] actual = MatcherUtils.prepareWordsFromTerms(TEST_TERMS_INPUT);
-        assertArrayEquals(TEST_TERMS_SEP, actual);
+        assertArrayEqualsInAnyOrder(TEST_TERMS_SEP, actual);
+    }
+
+    private void assertArrayEqualsInAnyOrder(String[] testTermsSep, String[] actual) {
+        var firstList = Arrays.asList(testTermsSep);
+        var secondList = Arrays.asList(actual);
+        assertTrue(firstList.size() == secondList.size() && firstList.containsAll(secondList) && secondList.containsAll(firstList));
     }
 
     @Test

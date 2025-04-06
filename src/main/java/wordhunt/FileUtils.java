@@ -35,15 +35,14 @@ public final class FileUtils {
      * @return
      */
     public static byte[] readFileSampleIntoByteArray(File file, int maxSampleLength) {
-        int targetLen = maxSampleLength;
-        if (targetLen == 0 || file.length() < targetLen) {
-            targetLen = (int) file.length();
-        }
+        var targetLen = maxSampleLength == 0 || file.length() < maxSampleLength
+            ? (int) file.length() 
+            : maxSampleLength;
 
-        byte[] bFile = new byte[targetLen];
+        var bFile = new byte[targetLen];
         int bytesRead;
 
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+        try (var fileInputStream = new FileInputStream(file)) {
             bytesRead = fileInputStream.read(bFile);
         } catch (IOException ioe) {
             throw new SearchException("IO error: " + ioe.getMessage(), ioe);
@@ -51,7 +50,9 @@ public final class FileUtils {
             throw new SearchException("Unknown error: " + e.getMessage(), e);
         }
 
-        if (bytesRead == targetLen) {
+        if (bytesRead == -1) {
+            return new byte[0];
+        } else if (bytesRead == targetLen) {
             return bFile;
         } else if (bytesRead >= 0) {
             return Arrays.copyOf(bFile, bytesRead);

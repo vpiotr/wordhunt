@@ -15,33 +15,39 @@ limitations under the License.
  */
 package wordhunt;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /**
- * Performs directory walking
+ * Performs directory walking using NIO Files API
  *
  * @author piotr
  */
 public class FileWalker {
 
-    //TODO: (some day) refactor to Files.walkFileTree()
     public void walk(String dirName, FileVisitor visitor) {
+        try {
+            var path = Paths.get(dirName);
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    visitor.handleItem(file.toAbsolutePath().toString(), false);
+                    return FileVisitResult.CONTINUE;
+                }
 
-        File root = new File(dirName);
-        File[] list = root.listFiles();
-
-        if (list == null) {
-            return;
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                    visitor.handleItem(dir.toAbsolutePath().toString(), true);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new SearchException("Error walking directory: " + dirName, e);
         }
-
-        for (File f : list) {
-            if (f.isDirectory()) {
-                walk(f.getAbsolutePath(), visitor);
-                visitor.handleItem(f.getAbsolutePath(), true);
-            } else {
-                visitor.handleItem(f.getAbsolutePath(), false);
-            }
-        }
-
     }
 }

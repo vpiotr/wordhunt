@@ -49,21 +49,16 @@ public class BasicIndexWalker implements IndexWalker {
             line = nextLine();
         } while ((line != null) && line.startsWith(IndexConst.COMMENT_PREFIX));
 
-        if (line != null) {
-            return parseEntryLine(line);
-        } else {
-            return null;
-        }
-
+        return (line != null) ? parseEntryLine(line) : null;
     }
 
     @Override
     public String[] nextMeta() {
-        String line = nextLine();
+        var line = nextLine();
         String[] result = null;
 
         if ((line != null) && line.startsWith(IndexConst.COMMENT_PREFIX)) {
-            String metaLine = line.substring(IndexConst.COMMENT_PREFIX.length());
+            var metaLine = line.substring(IndexConst.COMMENT_PREFIX.length());
             if (metaLine.contains(IndexConst.META_SEPARATOR)) {
                 result = metaLine.split(IndexConst.META_SEPARATOR);
             }
@@ -77,30 +72,45 @@ public class BasicIndexWalker implements IndexWalker {
     }
 
     private String nextLine() {
-        String line;
-
         if (bufferedLine != null) {
-            line = bufferedLine;
+            var line = bufferedLine;
             bufferedLine = null;
             return line;
         }
 
         try {
-            line = reader.readLine();
+            return reader.readLine();
         } catch (IOException ioe) {
             throw new SearchException("IO error: " + ioe.getMessage(), ioe);
         }
-
-        return line;
     }
 
     private FoundDocument parseEntryLine(String line) {
-        String[] parts = line.split("\\" + IndexConst.ENTRY_FIELD_SEPARATOR);
+        var parts = line.split("\\" + IndexConst.ENTRY_FIELD_SEPARATOR);
 
-        boolean isDir = (parts.length > FIELD_INDEX_DIR_PREFIX) && parts[FIELD_INDEX_DIR_PREFIX].equals(IndexConst.DIR_PREFIX);
-        String relativePath = (parts.length > FIELD_INDEX_RELATIVE_PATH) ? parts[FIELD_INDEX_RELATIVE_PATH] : ".";
-        String mimeType = (parts.length > FIELD_INDEX_MIME_TYPE) ? parts[FIELD_INDEX_MIME_TYPE] : "";
-        String charsetName = (parts.length > FIELD_INDEX_CHARSET_NAME) ? parts[FIELD_INDEX_CHARSET_NAME] : "";
+        var isDir = (parts.length > FIELD_INDEX_DIR_PREFIX) && 
+                    parts[FIELD_INDEX_DIR_PREFIX].equals(IndexConst.DIR_PREFIX);
+        
+        String relativePath;
+        if (parts.length > FIELD_INDEX_RELATIVE_PATH) {
+            relativePath = parts[FIELD_INDEX_RELATIVE_PATH];
+        } else {
+            relativePath = ".";
+        }
+        
+        String mimeType;
+        if (parts.length > FIELD_INDEX_MIME_TYPE) {
+            mimeType = parts[FIELD_INDEX_MIME_TYPE];
+        } else {
+            mimeType = "";
+        }
+        
+        String charsetName;
+        if (parts.length > FIELD_INDEX_CHARSET_NAME) {
+            charsetName = parts[FIELD_INDEX_CHARSET_NAME];
+        } else {
+            charsetName = "";
+        }
 
         return new FoundDocument(relativePath, isDir, mimeType, charsetName);
     }

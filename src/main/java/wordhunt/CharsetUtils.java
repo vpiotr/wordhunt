@@ -17,7 +17,6 @@ package wordhunt;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -30,13 +29,7 @@ public final class CharsetUtils {
     private static final String DEFAULT_CHARSET = "US-ASCII";
 
     public static String detectCharsetName(byte[] data) {
-        String charsetName;
-        if (isValidUtf8(data)) {
-            charsetName = CHARSET_UTF8;
-        } else {
-            charsetName = DEFAULT_CHARSET;
-        }
-        return charsetName;
+        return isValidUtf8(data) ? CHARSET_UTF8 : DEFAULT_CHARSET;
     }
 
     public static boolean isUtf8CharsetName(String charsetName) {
@@ -44,8 +37,7 @@ public final class CharsetUtils {
     }
 
     private static boolean isValidUtf8(byte[] input) {
-
-        CharsetDecoder cs = StandardCharsets.UTF_8.newDecoder();
+        var cs = StandardCharsets.UTF_8.newDecoder();
 
         try {
             cs.decode(ByteBuffer.wrap(input));

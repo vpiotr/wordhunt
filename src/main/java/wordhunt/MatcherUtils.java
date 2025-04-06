@@ -16,11 +16,12 @@ limitations under the License.
 package wordhunt;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -46,58 +47,38 @@ public final class MatcherUtils {
             return new String[0];
         }
 
-        List<String> newWords = new ArrayList<>();
-
-        for (String word : words) {
-
-            String newWord = caseSensitive ? word : word.toUpperCase(Locale.getDefault());
-            Matcher m = WORD_PATTERN.matcher(newWord);
-
-            while (m.find()) {
-                String foundWord = newWord.substring(m.start(), m.end());
-                newWords.add(foundWord);
-            }
-        }
-
-        return newWords.toArray(new String[0]);
+        return Arrays.stream(words)
+                .flatMap(word -> {
+                    var newWord = caseSensitive ? word : word.toUpperCase(Locale.getDefault());
+                    var m = WORD_PATTERN.matcher(newWord);
+                    var foundWords = new HashSet<String>();
+                    while (m.find()) {
+                        foundWords.add(newWord.substring(m.start(), m.end()));
+                    }
+                    return foundWords.stream();
+                })
+                .toArray(String[]::new);
     }
 
     public static boolean matchesAllWords(String text, String[] words,
             boolean caseSensitive, boolean caseWordSplit) {
-        Set<String> wordsInText
-                = extractWords(text, caseSensitive, caseWordSplit);
-
-        for (String word : words) {
-            if (!wordsInText.contains(word)) {
-                return false;
-            }
-        }
-
-        return true;
+        var wordsInText = extractWords(text, caseSensitive, caseWordSplit);
+        return Arrays.stream(words).allMatch(wordsInText::contains);
     }
 
     public static List<String> stripMatchingWords(String[] words, String text, boolean caseSensitive, boolean caseWordSplit) {
-        Set<String> wordsInText
-                = extractWords(text, caseSensitive,
-                        caseWordSplit);
-
-        List<String> resultList = new ArrayList<>();
-
-        for (String word : words) {
-            if (!wordsInText.contains(word)) {
-                resultList.add(word);
-            }
-        }
-
-        return resultList;
+        var wordsInText = extractWords(text, caseSensitive, caseWordSplit);
+        return Arrays.stream(words)
+                .filter(word -> !wordsInText.contains(word))
+                .collect(Collectors.toList());
     }
 
     public static Set<String> extractWords(String text, boolean caseSensitive, boolean caseWordSplit) {
-        Matcher m = WORD_PATTERN.matcher(text);
-        Set<String> result = new HashSet<>();
+        var m = WORD_PATTERN.matcher(text);
+        var result = new HashSet<String>();
 
         while (m.find()) {
-            String word = text.substring(m.start(), m.end());
+            var word = text.substring(m.start(), m.end());
             result.add(caseSensitive ? word : word.toUpperCase(Locale.getDefault()));
             if (caseWordSplit) {
                 addCaseSplitWords(word, caseSensitive, result);
@@ -109,17 +90,15 @@ public final class MatcherUtils {
     }
 
     private static void addCaseSplitWords(String word, boolean caseSensitive, Collection<String> output) {
-        String[] caseWords = word.split(CASE_SPLIT_PATTERN);
-        for (String cword : caseWords) {
-            output.add(caseSensitive ? cword : cword.toUpperCase(Locale.getDefault()));
-        }
+        Arrays.stream(word.split(CASE_SPLIT_PATTERN))
+              .map(cword -> caseSensitive ? cword : cword.toUpperCase(Locale.getDefault()))
+              .forEach(output::add);
     }
 
     private static void addCharSplitWords(String word, String splitChars, boolean caseSensitive, Collection<String> output) {
-        String[] splitWords = word.split(splitChars);
-        for (String sword : splitWords) {
-            output.add(caseSensitive ? sword : sword.toUpperCase(Locale.getDefault()));
-        }
+        Arrays.stream(word.split(splitChars))
+              .map(sword -> caseSensitive ? sword : sword.toUpperCase(Locale.getDefault()))
+              .forEach(output::add);
     }
 
     private MatcherUtils() {

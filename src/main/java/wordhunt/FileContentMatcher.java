@@ -21,7 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -47,136 +46,120 @@ public class FileContentMatcher extends BaseFileMatcher {
 
     @Override
     public void prepare(SearchTerms terms, SearchContext context) {
-
         prepareIgnoredFiles(context);
-
         saveWordsInContext(terms.getAnyWords(), context, CTX_CONTENT_WORDS_ANY);
         saveWordsInContext(terms.getContentWords(), context, CTX_CONTENT_WORDS_CONTENT);
-
         prepareNextMatcher(terms, context);
     }
 
     @Override
     public Boolean isMatching(FoundDocument entry, SearchContext context, Boolean acceptedStatus) {
+        var wordsForPath = getWordsFromContext(context, CTX_CONTENT_WORDS_ANY);
+        var wordsForContent = getWordsFromContext(context, CTX_CONTENT_WORDS_CONTENT);
 
-        String[] wordsForPath = getWordsFromContext(context, CTX_CONTENT_WORDS_ANY);
-        String[] wordsForContent = getWordsFromContext(context, CTX_CONTENT_WORDS_CONTENT);
-
+        // No content conditions to check
         if (wordsForPath == null && wordsForContent == null) {
-            // no conditions for content
             return nextMatcherResult(entry, context, acceptedStatus);
         }
 
-        if (wordsForPath == null) {
-            wordsForPath = new String[]{};
-        }
+        var filePath = entry.getFilePath();
+        var nonMatchingWordsInPath = stripMatchingWords(
+            wordsForPath != null ? wordsForPath : new String[]{}, 
+            filePath
+        );
+        
+        var wordsLeftForContent = ArrayUtils.merge(nonMatchingWordsInPath, wordsForContent);
+        var absolutePath = buildEntryAbsolutePath(filePath);
+        var documentInfo = documentStorage.getDocumentInfo(absolutePath);
 
-        String filePath = entry.getFilePath();
-        String[] nonMatchingWordsInPath = stripMatchingWords(wordsForPath, filePath);
-        String[] wordsLeftForContent = ArrayUtils.merge(nonMatchingWordsInPath, wordsForContent);
+        // Fast fail conditions
+        if (documentInfo.isDirectory() || !documentInfo.documentExists() || 
+            !documentInfo.isReadable() || wordsLeftForContent.length == 0) {
 
-        Boolean matchedStatus = acceptedStatus;
-
-        String absolutePath = buildEntryAbsolutePath(filePath);
-
-        DocumentInfo documentInfo = documentStorage.getDocumentInfo(absolutePath);
-
-        if (documentInfo.isDirectory() || !documentInfo.documentExists() || !documentInfo.isReadable() || wordsLeftForContent.length == 0) {
-
-            if ((documentInfo.isDirectory() && !isIncludeDirsEnabled())
-                    || !documentInfo.documentExists()
-                    || !documentInfo.isReadable()
-                    || (wordsLeftForContent.length > 0)) {
-                matchedStatus = Boolean.FALSE;
+            // No words to check or can't check the document
+            if ((documentInfo.isDirectory() && !isIncludeDirsEnabled()) ||
+                !documentInfo.documentExists() ||
+                !documentInfo.isReadable() ||
+                (wordsLeftForContent.length > 0)) {
+                return Boolean.FALSE;
             }
 
-            if (!Boolean.FALSE.equals(matchedStatus)) {
-                matchedStatus = nextMatcherResult(entry, context, Boolean.TRUE);
-            }
-
-            return matchedStatus;
+            return nextMatcherResult(entry, context, Boolean.TRUE);
         }
 
+        // Can't read the content with current charset
         if (!canHandleContent(entry.getMimeType(), entry.getCharsetName())) {
-            // there are some words to match, but we cannot check them
             return Boolean.FALSE;
         }
 
-        boolean contentOK = hasAllWordsInFile(wordsLeftForContent, entry.getCharsetName(), absolutePath);
-
-        if (!Boolean.FALSE.equals(matchedStatus)) {
-            matchedStatus = contentOK;
+        // Check if the content contains all required words
+        var contentMatches = hasAllWordsInFile(wordsLeftForContent, entry.getCharsetName(), absolutePath);
+        
+        // If already rejected or content doesn't match, reject
+        if (Boolean.FALSE.equals(acceptedStatus) || !contentMatches) {
+            return Boolean.FALSE;
         }
 
-        if (!Boolean.FALSE.equals(matchedStatus)) {
-            matchedStatus = nextMatcherResult(entry, context, matchedStatus);
-        }
-
-        return Boolean.TRUE.equals(matchedStatus);
+        // Content matches, check next matcher
+        return nextMatcherResult(entry, context, Boolean.TRUE);
     }
 
     @Override
     public Boolean isMatching(String absolutePath, boolean isDirectory, SearchContext context, Boolean acceptedStatus) {
-        String relative = FilePathUtils.absoluteToRelativePath(absolutePath, getSearchRootDir());
-        FileType fileType = fileTypeDetector.detectFileType(absolutePath);
+        var relative = FilePathUtils.absoluteToRelativePath(absolutePath, getSearchRootDir());
+        var fileType = fileTypeDetector.detectFileType(absolutePath);
         if (fileType == null) {
             fileType = FileType.UNKNOWN_FILE_TYPE;
         }
-        FoundDocument document = new FoundDocument(relative, isDirectory, fileType.getMimeType(), fileType.getCharsetName());
+        
+        var document = new FoundDocument(relative, isDirectory, fileType.getMimeType(), fileType.getCharsetName());
         return isMatching(document, context, acceptedStatus);
     }
 
-
     private boolean canHandleContent(String mimeType, String charsetName) {
-        return MimeUtils.isTextType(mimeType) && (!charsetName.isEmpty());
+        return MimeUtils.isTextType(mimeType) && !charsetName.isEmpty();
     }
 
     private String[] stripMatchingWords(String[] words, String filePath) {
-        List<String> resultList = MatcherUtils.stripMatchingWords(words, filePath, isCaseSensitiveEnabled(),
-                isCaseWordSplitEnabled());
-
+        var resultList = MatcherUtils.stripMatchingWords(
+            words, filePath, isCaseSensitiveEnabled(), isCaseWordSplitEnabled()
+        );
         return resultList.toArray(new String[0]);
     }
 
     private boolean hasAllWordsInFile(String[] words, String charsetName, String absolutePath) {
-        Charset charset = Charset.forName(charsetName);
+        var charset = Charset.forName(charsetName);
 
-        boolean fileContainsAllWords;
-
-        try (BufferedReader in = documentStorage.getDocumentReader(absolutePath, charset)) {
-            fileContainsAllWords = hasAllWords(in, words);
+        try (var in = documentStorage.getDocumentReader(absolutePath, charset)) {
+            return hasAllWords(in, words);
         } catch (UnsupportedEncodingException uee) {
-            throw new SearchException("Wrong encoding for file: " + absolutePath + ", encoding: " + charsetName, uee);
+            throw new SearchException(
+                "Wrong encoding for file: " + absolutePath + ", encoding: " + charsetName, uee
+            );
         } catch (IOException ioe) {
             throw new SearchException("IO error: " + ioe.getMessage(), ioe);
         }
-
-        return fileContainsAllWords;
     }
 
     private String buildEntryAbsolutePath(String filePath) {
-        String rootPath = getSearchRootDir();
+        var rootPath = getSearchRootDir();
         return FilePathUtils.toAbsolutePath(rootPath, filePath);
     }
 
     private boolean hasAllWords(BufferedReader in, String[] words) throws IOException {
-
-        Set<String> wordSet = new HashSet<>(Arrays.asList(words));
-
-        boolean caseSensitive = isCaseSensitiveEnabled();
-        boolean caseWordSplit = isCaseWordSplitEnabled();
-
+        var wordSet = new HashSet<>(Arrays.asList(words));
+        var caseSensitive = isCaseSensitiveEnabled();
+        var caseWordSplit = isCaseWordSplitEnabled();
         String line;
 
-        while ((!wordSet.isEmpty()) && ((line = in.readLine()) != null)) {
-            Set<String> lineWords = MatcherUtils.extractWords(line, caseSensitive, caseWordSplit);
-            for (String lineWord : lineWords) {
-                if (wordSet.contains(lineWord)) {
-                    wordSet.remove(lineWord);
-                    if (wordSet.isEmpty()) {
-                        break;
-                    }
-                }
+        while (!wordSet.isEmpty() && (line = in.readLine()) != null) {
+            var lineWords = MatcherUtils.extractWords(line, caseSensitive, caseWordSplit);
+            lineWords.stream()
+                .filter(wordSet::contains)
+                .forEach(wordSet::remove);
+                
+            if (wordSet.isEmpty()) {
+                break;
             }
         }
 
