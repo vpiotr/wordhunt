@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /**
  * Functions used for content matching against provided words. Used in file and

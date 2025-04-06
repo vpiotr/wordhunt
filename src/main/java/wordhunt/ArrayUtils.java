@@ -16,8 +16,6 @@ limitations under the License.
 package wordhunt;
 
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * Utility functions for arrays.
