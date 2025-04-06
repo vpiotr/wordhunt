@@ -16,6 +16,7 @@ limitations under the License.
 package wordhunt;
 
 import java.util.function.Consumer;
+import wordhunt.logging.LoggerService;
 
 /**
  * Displays found files on screen.
@@ -23,6 +24,8 @@ import java.util.function.Consumer;
  */
 public class BasicSearchConsumer implements SearchConsumer {
 
+    private static final LoggerService logger = new LoggerService(BasicSearchConsumer.class);
+    
     private final boolean formatAsListing;
     private final DocumentStorage documentStorage;
     private final Consumer<String> searchOutput;
@@ -32,15 +35,25 @@ public class BasicSearchConsumer implements SearchConsumer {
         this.documentStorage = documentStorage;
         this.searchOutput = searchOutput;
     }
+    
+    /**
+     * Create a BasicSearchConsumer with default logging behavior
+     * 
+     * @param config Search configuration
+     * @param documentStorage Document storage to use
+     */
+    public BasicSearchConsumer(SearchConfig config, DocumentStorage documentStorage) {
+        this(config, documentStorage, LoggerService::logSearchResult);
+    }
 
     @Override
     public void handle(String absolutePath) {
         if (documentStorage.documentExists(absolutePath)) {
-            if (formatAsListing) {
-                searchOutput.accept(absolutePath);
-            } else {
-                searchOutput.accept("Found: " + absolutePath);
-            }
+            String outputMessage = formatAsListing ? absolutePath : "Found: " + absolutePath;
+            searchOutput.accept(outputMessage);
+            
+            // Also log at debug level for detailed application logs
+            logger.debug("Found document: {}", absolutePath);
         }
     }
 }

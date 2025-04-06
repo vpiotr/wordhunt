@@ -21,8 +21,15 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import wordhunt.logging.LoggerProcessLog;
+import wordhunt.logging.LoggerService;
 
 class App {
+
+    private static final LoggerService logger = new LoggerService(App.class);
+    private static final ProcessLog processLog = new LoggerProcessLog(logger);
+    // Add a dedicated console process log for help text
+    private static final ProcessLog consoleLog = line -> System.out.println(line);
 
     public static final int MIN_FIND_ARGUMENT_COUNT = 3;
 
@@ -84,7 +91,7 @@ class App {
             showHelp();
             return true;
         } else if (command.equals("--version")) {
-            HelpWriter.writeVersion(getVersionString(), App::writeLineToConsole);
+            HelpWriter.writeVersion(getVersionString(), consoleLog);
             return true;
         } else if (simpleMode) {
             processFindCommand(args, true, ".", 0);
@@ -251,7 +258,7 @@ class App {
     }
 
     private static void writeHelp(boolean longDescription) {
-        HelpWriter.writeHelp(longDescription, App::writeLineToConsole);
+        HelpWriter.writeHelp(longDescription, consoleLog);
     }
 
     private static String getVersionString() {
@@ -259,14 +266,14 @@ class App {
     }
 
     private static void showException(String message, Throwable exception, boolean showStack) {
-        writeErrorToConsole(message + " " + exception.getMessage());
+        logger.error(message + exception.getMessage());
 
         if (showStack) {
-            exception.printStackTrace();
+            logger.error("Stack trace:", exception);
             var cause = exception.getCause();
             while (cause != null) {
-                writeErrorToConsole("Caused by: " + cause.getMessage());
-                cause.printStackTrace();
+                logger.error("Caused by: {}", cause.getMessage());
+                logger.error("Details:", cause);
                 cause = cause.getCause();
             }
         }
@@ -283,7 +290,7 @@ class App {
         var allTerms = getAllTerms(config);
 
         if (!list) {
-            writeLineToConsole(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
+            logger.info(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
         }
 
         var indexStorage = new IndexStorageViaFiles();
@@ -291,10 +298,10 @@ class App {
         var searchTerms = buildTerms(config);
 
         if (iv.indexExists()) {
-            final var searchStrategyUsingPreparedIndex = new SearchStrategyUsingPreparedIndex(config, App::writeLineToConsole);
+            final var searchStrategyUsingPreparedIndex = new SearchStrategyUsingPreparedIndex(config, (msg) -> logger.info(msg));
             searchStrategyUsingPreparedIndex.invoke(searchTerms);
         } else {
-            final var searchStrategyWithoutIndex = new SearchStrategyWithoutIndex(config, App::writeLineToConsole);
+            final var searchStrategyWithoutIndex = new SearchStrategyWithoutIndex(config, (msg) -> logger.info(msg));
             searchStrategyWithoutIndex.invoke(searchTerms);
         }
     }
@@ -307,14 +314,14 @@ class App {
     }
 
     private static void performIndex(SearchConfig config) {
-        var dirName = (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
-        writeLineToConsole(String.format("Performing 'index' in dir [%s]", dirName));
+        var dirName =                 (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
+        logger.info(String.format("Performing 'index' in dir [%s]", dirName));
         
-        var documentStorage = new DocumentStorageViaFiles();
+        var documentStorage =                 new DocumentStorageViaFiles();
         var indexStorage = new IndexStorageViaFiles();
         var fi = new FileIndexer(config, dirName, new TextFileTypeDetector(), 
                                 new BasicIndexEntryWriter(dirName),
-                                indexStorage, documentStorage, App::writeLineToConsole);
+                                indexStorage, documentStorage, (msg) -> logger.info(msg));
         fi.rebuildIndex();
     }
 
@@ -323,16 +330,6 @@ class App {
         return terms.entrySet().stream()
                 .map(Entry::getValue)
                 .reduce(new String[]{}, ArrayUtils::merge);
-    }
-
-    @SuppressWarnings("java:S106")
-    private static void writeLineToConsole(String line) {
-        System.out.println(line);
-    }
-
-    @SuppressWarnings("java:S106")
-    private static void writeErrorToConsole(String line) {
-        System.err.println(line);
     }
 
 }
