@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+  "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+  "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <module name="FileTabCharacter"/>
+    <module name="TreeWalker">
+        <module name="HiddenField"/>
+        <module name="ConstantName">
+          <property name="format"
+            value="^log(ger)?$|^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>  
+        <!-- Imports -->
+        <module name="AvoidStarImport">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>        
+        <module name="LocalVariableName"/>
+        <!-- Modifiers -->
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+        <!-- Names -->
+        <module name="TypeName"/>
+        <module name="ParameterName"/>
+        <module name="PackageName"/>
+        <module name="MemberName"/>
+        <module name="MethodName">
+          <property name="format" value="^[a-z][a-z0-9][_a-zA-Z0-9]*$"/>
+          <message key="name.invalidPattern"
+                value="Method name ''{0}'' must match pattern ''{1}''."/>
+        </module>
+        <module name="SuppressionXpathSingleFilter">
+          <property name="checks" value="MethodName"/>
+          <property name="query" value="//METHOD_DEF[
+                                        ./MODIFIERS/ANNOTATION//IDENT[contains(@text, 'Test')]
+                                      ]/IDENT"/>
+          <property name="message" value="'[a-z][a-z0-9][a-zA-Z0-9]*(?:_[a-z][a-z0-9][a-zA-Z0-9]*)*'"/>
+        </module>
+                
+        <module name="DeclarationOrder"/>
+
+        <module name="CyclomaticComplexity"/>
+        <module name="EmptyBlock"/>
+        <module name="HideUtilityClassConstructor"/>
+
+    </module>
+</module>
