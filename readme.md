@@ -27,17 +27,20 @@ Search "9781784398026" can return this result:
 
     9781784398026-JAVA_FX_8_ESSENTIALS.pdf
              
-Examples
+Examples of usage
 ------------------
-Example of usage:
 
-  ./wordhunt.sh --find . basic search java
+Finds all files with words "basic search java" in file path, name or contents (in any order):
 
--> finds all files with words "basic search java" in file path, name or contents (in any order).
+```sh
+./wordhunt.sh --find . basic search java
+```
 
-  java -jar ./wordhunt.jar --find . basic search java
-  
--> performs the same without usage of shell scripting.  
+Performs the same without usage of shell scripting, assuming "wordhunt.jar" is the file path to the tool JAR file:
+
+```sh
+java -jar ./wordhunt.jar --find . basic search java
+``` 
 
 Static Code Analysis
 ------------------
