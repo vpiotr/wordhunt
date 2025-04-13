@@ -5,9 +5,9 @@ final class SearchStrategyUsingPreparedIndex {
     private final SearchConfig config;
     private final ProcessLog processLog;
 
-    SearchStrategyUsingPreparedIndex(SearchConfig config, ProcessLog processLog) {
-        this.config = config;
-        this.processLog = processLog;
+    SearchStrategyUsingPreparedIndex(SearchConfig aConfig, ProcessLog aProcessLog) {
+        this.config = aConfig;
+        this.processLog = aProcessLog;
     }
 
     public void invoke(SearchTerms searchTerms) {

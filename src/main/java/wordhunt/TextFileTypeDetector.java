@@ -16,6 +16,11 @@ limitations under the License.
 package wordhunt;
 
 import java.nio.file.Paths;
+
+import wordhunt.utils.CharsetUtils;
+import wordhunt.utils.FileUtils;
+import wordhunt.utils.MimeConst;
+
 import java.nio.file.Files;
 import java.io.File;
 
@@ -29,12 +34,13 @@ public class TextFileTypeDetector implements FileTypeDetector {
     private static final int ASCII_CODE_TAB = 9;
     private static final int ASCII_CODE_NL = 10;
     private static final int ASCII_CODE_CR = 13;
-    private final FileTypeDetector nextDetector;
     private static final int DEFAULT_SAMPLE_LEN = 5000;
+
+    private final FileTypeDetector nextDetector;
     private final int maxSampleLength;
 
-    public TextFileTypeDetector(FileTypeDetector nextDetector) {
-        this.nextDetector = nextDetector;
+    public TextFileTypeDetector(FileTypeDetector aNextDetector) {
+        this.nextDetector = aNextDetector;
         this.maxSampleLength = DEFAULT_SAMPLE_LEN;
     }
 

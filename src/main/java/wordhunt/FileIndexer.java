@@ -36,15 +36,15 @@ public class FileIndexer {
     private final DocumentStorage documentStorage;
     private final Consumer<String> indexingOutput;
 
-    public FileIndexer(SearchConfig config, String dirName, FileTypeDetector detector, IndexEntryWriter entryWriter,
-                       IndexStorage indexStorage, DocumentStorage documentStorage, Consumer<String> indexingOutput) {
-        this.config = config;
-        this.dirName = dirName;
-        this.detector = detector;
-        this.entryWriter = entryWriter;
-        this.indexStorage = indexStorage;
-        this.documentStorage = documentStorage;
-        this.indexingOutput = indexingOutput;
+    public FileIndexer(SearchConfig aConfig, String directoryName, FileTypeDetector aDetector, IndexEntryWriter aEntryWriter,
+                       IndexStorage aIndexStorage, DocumentStorage aDocumentStorage, Consumer<String> aIndexingOutput) {
+        this.config = aConfig;
+        this.dirName = directoryName;
+        this.detector = aDetector;
+        this.entryWriter = aEntryWriter;
+        this.indexStorage = aIndexStorage;
+        this.documentStorage = aDocumentStorage;
+        this.indexingOutput = aIndexingOutput;
     }
 
     public void rebuildIndex() {

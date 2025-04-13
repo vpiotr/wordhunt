@@ -20,18 +20,17 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Optional;
 
-import wordhunt.logging.LoggerProcessLog;
 import wordhunt.logging.LoggerService;
+import wordhunt.utils.ArrayUtils;
 
 class App {
 
-    private static final LoggerService logger = new LoggerService(App.class);
-    private static final ProcessLog processLog = new LoggerProcessLog(logger);
-    // Add a dedicated console process log for help text
-    private static final ProcessLog consoleLog = line -> System.out.println(line);
-
     public static final int MIN_FIND_ARGUMENT_COUNT = 3;
+    public static final int MIN_INDEX_ARGUMENT_COUNT = 2;
+
+    private static final LoggerService logger = new LoggerService(App.class);
 
     private App() {}
 
@@ -70,35 +69,44 @@ class App {
 
     private static boolean processCommand(String[] args) {
         var command = args[0];
-        var simpleMode = !command.equals("--index")
-                && !command.equals("--find")
-                && !command.equals("--help")
-                && !command.equals("--version");
+        var commandMetaOpt = detectMainCommand(command, args);
 
-        if (command.equals("--find")) {
-            if (args.length >= MIN_FIND_ARGUMENT_COUNT) {
-                processFindCommand(args, false, args[1], 2);
-                return true;
-            }
-        } else if (command.equals("--index")) {
-            if (args.length >= 2) {
-                validateDir(args[1]);
-                var config = parseOptions(args, false, args[1], 2);
-                performIndex(config);
-                return true;
-            }
-        } else if (command.equals("--help")) {
-            showHelp();
-            return true;
-        } else if (command.equals("--version")) {
-            HelpWriter.writeVersion(getVersionString(), consoleLog);
-            return true;
-        } else if (simpleMode) {
+        if (!commandMetaOpt.isPresent()) {
             processFindCommand(args, true, ".", 0);
             return true;
         }
-        
-        return false;
+
+        if (commandMetaOpt.isPresent() && commandMetaOpt.get().minArgCount > args.length) {
+            return false;
+        }
+
+        var commandMeta = commandMetaOpt.get();
+        var commandType = commandMeta.commandType;
+        var commandArgs = commandMeta.args;
+
+        switch (commandType) {
+            case FIND: {
+                var argsRest = Arrays.copyOfRange(commandArgs, 1, commandArgs.length);
+                var searchDir = commandArgs[0];
+                processFindCommand(argsRest, false, searchDir, 0);
+                return true;
+            }
+            case INDEX:
+                var argsRest = Arrays.copyOfRange(commandArgs, 1, commandArgs.length);
+                var searchDir = commandArgs[0];
+                validateDir(searchDir);
+                var config = parseOptions(argsRest, false, searchDir, 0);
+                performIndex(config);
+                return true;
+            case HELP:
+                showHelp();
+                return true;
+            case VERSION:
+                HelpWriter.writeVersion(getVersionString(), App::writeToOutput);
+                return true;
+            default:
+                return false;
+        }
     }
 
     private static void processFindCommand(String[] args, boolean simpleMode, String searchDir, int optionIndex) {
@@ -136,53 +144,61 @@ class App {
         int i = startIndex;
         while (i < args.length) {
             var value = args[i];
-            switch (value) {
-                case "--brief":
-                    result.setValue(SearchConst.CFG_SEARCH_BRIEF, Boolean.TRUE);
-                    break;
-                case "--include-dirs":
-                    result.setValue(SearchConst.CFG_SEARCH_INCLUDE_DIRS, Boolean.TRUE);
-                    break;
-                case "--index-path":
-                    parseIndexPath(args, i, result);
-                    i++;
-                    break;
-                case "--case-sensitive":
-                    result.setValue(SearchConst.CFG_SEARCH_CASE_SENSITIVE, Boolean.TRUE);
-                    break;
-                case "--no-case-split":
-                    result.setValue(SearchConst.CFG_SEARCH_NO_CASE_SPLIT, Boolean.TRUE);
-                    break;
-                case "--anywhere":
-                    parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_ANY);
-                    i++;
-                    break;
-                case "--inname":
-                    parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_FILE);
-                    i++;
-                    break;
-                case "--inpath":
-                    parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_PATH);
-                    i++;
-                    break;
-                case "--incontent":
-                    parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_CONTENT);
-                    i++;
-                    break;
-                default:
-                    if (!SearchConst.OPT_ENABLE_DEBUG.equals(value)) {
-                        var anyTerms = Arrays.copyOfRange(args, i, args.length);
-                        anyTerms = ArrayUtils.merge(anyTerms, getTermsInConfig(result, SearchConst.CFG_SEARCH_TERMS_PATH));
-                        setTermsInConfig(anyTerms, result, SearchConst.CFG_SEARCH_TERMS_PATH);
-                        i += anyTerms.length;
-                    }
-                    break;
-            }
-
-            i++;
+            i = processAdvancedOption(args, i, result, value);
         }
 
         return result;
+    }
+
+    private static int processAdvancedOption(String[] args, int i, SearchConfig result, String value) {
+        switch (value) {
+            case "--brief":
+                result.setValue(SearchConst.CFG_SEARCH_BRIEF, Boolean.TRUE);
+                break;
+            case "--include-dirs":
+                result.setValue(SearchConst.CFG_SEARCH_INCLUDE_DIRS, Boolean.TRUE);
+                break;
+            case "--index-path":
+                parseIndexPath(args, i, result);
+                i++;
+                break;
+            case "--case-sensitive":
+                result.setValue(SearchConst.CFG_SEARCH_CASE_SENSITIVE, Boolean.TRUE);
+                break;
+            case "--no-case-split":
+                result.setValue(SearchConst.CFG_SEARCH_NO_CASE_SPLIT, Boolean.TRUE);
+                break;
+            case "--anywhere":
+                parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_ANY);
+                i++;
+                break;
+            case "--inname":
+                parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_FILE);
+                i++;
+                break;
+            case "--inpath":
+                parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_PATH);
+                i++;
+                break;
+            case "--incontent":
+                parseTerms(args, i, result, SearchConst.CFG_SEARCH_TERMS_CONTENT);
+                i++;
+                break;
+            default:
+                i = processArgValue(args, i, result, value);
+                break;
+        }
+        return i + 1;
+    }
+
+    private static int processArgValue(String[] args, int i, SearchConfig result, String value) {
+        if (!SearchConst.OPT_ENABLE_DEBUG.equals(value)) {
+            var anyTerms = Arrays.copyOfRange(args, i, args.length);
+            anyTerms = ArrayUtils.merge(anyTerms, getTermsInConfig(result, SearchConst.CFG_SEARCH_TERMS_PATH));
+            setTermsInConfig(anyTerms, result, SearchConst.CFG_SEARCH_TERMS_PATH);
+            i += anyTerms.length;
+        }
+        return i;
     }
 
     private static void setupSearchRootDir(SearchConfig result, String dirName) {
@@ -258,7 +274,7 @@ class App {
     }
 
     private static void writeHelp(boolean longDescription) {
-        HelpWriter.writeHelp(longDescription, consoleLog);
+        HelpWriter.writeHelp(longDescription, App::writeToOutput);
     }
 
     private static String getVersionString() {
@@ -281,7 +297,7 @@ class App {
 
     private static boolean checkDir(String dirName) {
         var f = new File(dirName);
-        return (f.exists() && f.isDirectory());
+        return f.exists() && f.isDirectory();
     }
 
     private static void performFind(SearchConfig config) {
@@ -290,7 +306,7 @@ class App {
         var allTerms = getAllTerms(config);
 
         if (!list) {
-            logger.info(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
+            writeToOutput(String.format("Performing 'find' in dir [%s] for terms [%s]", dirName, Arrays.toString(allTerms)));
         }
 
         var indexStorage = new IndexStorageViaFiles();
@@ -298,12 +314,16 @@ class App {
         var searchTerms = buildTerms(config);
 
         if (iv.indexExists()) {
-            final var searchStrategyUsingPreparedIndex = new SearchStrategyUsingPreparedIndex(config, (msg) -> logger.info(msg));
+            final var searchStrategyUsingPreparedIndex = new SearchStrategyUsingPreparedIndex(config, (msg) -> writeToOutput(msg));
             searchStrategyUsingPreparedIndex.invoke(searchTerms);
         } else {
-            final var searchStrategyWithoutIndex = new SearchStrategyWithoutIndex(config, (msg) -> logger.info(msg));
+            final var searchStrategyWithoutIndex = new SearchStrategyWithoutIndex(config, (msg) -> writeToOutput(msg));
             searchStrategyWithoutIndex.invoke(searchTerms);
         }
+    }
+
+    private static void writeToOutput(String message) {
+        System.out.println(message);
     }
 
     @SuppressWarnings("unchecked")
@@ -315,13 +335,13 @@ class App {
 
     private static void performIndex(SearchConfig config) {
         var dirName =                 (String) config.getValue(SearchConst.CFG_SEARCH_ROOT_DIR);
-        logger.info(String.format("Performing 'index' in dir [%s]", dirName));
+        writeToOutput(String.format("Performing 'index' in dir [%s]", dirName));
         
         var documentStorage =                 new DocumentStorageViaFiles();
         var indexStorage = new IndexStorageViaFiles();
         var fi = new FileIndexer(config, dirName, new TextFileTypeDetector(), 
                                 new BasicIndexEntryWriter(dirName),
-                                indexStorage, documentStorage, (msg) -> logger.info(msg));
+                                indexStorage, documentStorage, (msg) -> writeToOutput(msg));
         fi.rebuildIndex();
     }
 
@@ -330,6 +350,39 @@ class App {
         return terms.entrySet().stream()
                 .map(Entry::getValue)
                 .reduce(new String[]{}, ArrayUtils::merge);
+    }
+
+    private static Optional<MainCommandMeta> detectMainCommand(String command, String[] args) {
+        if (!command.startsWith("--")) {
+            return Optional.empty();
+        }
+
+        String commandWithoutPrefix = command.substring(2);
+        if (commandWithoutPrefix.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (commandWithoutPrefix.equals("find")) {
+            return Optional.of(new MainCommandMeta(MainCommandType.FIND, MIN_FIND_ARGUMENT_COUNT, Arrays.copyOfRange(args, 1, args.length)));
+        } else if (commandWithoutPrefix.equals("index")) {
+            return Optional.of(new MainCommandMeta(MainCommandType.INDEX, MIN_INDEX_ARGUMENT_COUNT, Arrays.copyOfRange(args, 1, args.length)));
+        } else if (commandWithoutPrefix.equals("help")) {
+            return Optional.of(new MainCommandMeta(MainCommandType.HELP, 0, args));
+        } else if (commandWithoutPrefix.equals("version")) {
+            return Optional.of(new MainCommandMeta(MainCommandType.VERSION, 0, args));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private record MainCommandMeta(MainCommandType commandType, int minArgCount, String[] args) {
+    }
+
+    private enum MainCommandType {
+        FIND,
+        INDEX,
+        HELP,
+        VERSION
     }
 
 }

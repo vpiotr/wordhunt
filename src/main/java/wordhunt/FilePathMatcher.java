@@ -26,9 +26,9 @@ public class FilePathMatcher extends BaseFileMatcher {
     private static final String CTX_PATH_WORDS_PATH = "path_words_path";
     private final DocumentStorage documentStorage;
 
-    public FilePathMatcher(SearchConfig config, SearchMatcher nextMatcher, DocumentStorage documentStorage) {
+    public FilePathMatcher(SearchConfig config, SearchMatcher nextMatcher, DocumentStorage aDocumentStorage) {
         super(config, nextMatcher);
-        this.documentStorage = documentStorage;
+        this.documentStorage = aDocumentStorage;
     }
 
     @Override

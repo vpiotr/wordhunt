@@ -37,6 +37,9 @@ public final class MatcherUtils {
     private static final String CHAR_SPLIT_WORDS_PATTERN = "[\\-_\\.]";
     private static final String CASE_SPLIT_PATTERN = "(?=\\p{Lu})";
 
+    private MatcherUtils() {
+    }
+
     public static String[] prepareWordsFromTerms(String[] words) {
         return prepareWordsFromTerms(words, false);
     }
@@ -100,6 +103,4 @@ public final class MatcherUtils {
               .forEach(output::add);
     }
 
-    private MatcherUtils() {
-    }
 }

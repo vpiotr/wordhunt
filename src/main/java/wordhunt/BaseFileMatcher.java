@@ -34,13 +34,13 @@ public abstract class BaseFileMatcher implements SearchMatcher {
     private final boolean includeDirs;
     private final boolean caseWordSplit;
 
-    protected BaseFileMatcher(SearchConfig config, SearchMatcher nextMatcher) {
-        this.config = config;
-        this.nextMatcher = nextMatcher;
+    protected BaseFileMatcher(SearchConfig aConfig, SearchMatcher aNextMatcher) {
+        this.config = aConfig;
+        this.nextMatcher = aNextMatcher;
 
-        this.caseSensitive = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_CASE_SENSITIVE));
-        this.includeDirs = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_INCLUDE_DIRS));
-        this.caseWordSplit = !Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_NO_CASE_SPLIT));
+        this.caseSensitive = Boolean.TRUE.equals(aConfig.getValue(SearchConst.CFG_SEARCH_CASE_SENSITIVE));
+        this.includeDirs = Boolean.TRUE.equals(aConfig.getValue(SearchConst.CFG_SEARCH_INCLUDE_DIRS));
+        this.caseWordSplit = !Boolean.TRUE.equals(aConfig.getValue(SearchConst.CFG_SEARCH_NO_CASE_SPLIT));
     }
 
     protected boolean isCaseSensitiveEnabled() {

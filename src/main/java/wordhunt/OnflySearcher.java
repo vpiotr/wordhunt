@@ -4,8 +4,8 @@ public class OnflySearcher implements DocumentSearcher {
 
     private final SearchConfig config;
 
-    public OnflySearcher(SearchConfig config) {
-        this.config = config;
+    public OnflySearcher(SearchConfig aConfig) {
+        this.config = aConfig;
     }
 
     @Override

@@ -25,14 +25,14 @@ import java.util.Objects;
  */
 public class FileType {
 
+    public static final FileType UNKNOWN_FILE_TYPE = new FileType("", "");
+
     private final String mimeType;
     private final String charsetName;
 
-    public static final FileType UNKNOWN_FILE_TYPE = new FileType("", "");
-
-    public FileType(String mimeType, String charsetName) {
-        this.mimeType = mimeType;
-        this.charsetName = charsetName;
+    public FileType(String aMimeType, String aCharsetName) {
+        this.mimeType = aMimeType;
+        this.charsetName = aCharsetName;
     }
 
     public String getMimeType() {

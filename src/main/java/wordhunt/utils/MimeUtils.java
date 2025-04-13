@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package wordhunt;
+package wordhunt.utils;
 
 /**
  * Utility functions for handling MIME type.
@@ -21,6 +21,9 @@ package wordhunt;
  * @author piotr
  */
 public final class MimeUtils {
+
+    private MimeUtils() {
+    }
 
     public static boolean isTextType(String mimeType) {
         return mimeType != null && (
@@ -30,6 +33,4 @@ public final class MimeUtils {
         );
     }
 
-    private MimeUtils() {
-    }
 }

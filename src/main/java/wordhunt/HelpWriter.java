@@ -2,7 +2,7 @@ package wordhunt;
 
 public class HelpWriter {
 
-    private HelpWriter() { throw new RuntimeException("Unsupported") {};}
+    private HelpWriter() { }
 
     public static void writeHelp(boolean longDescription, ProcessLog processLog) {
         processLog.writeLine("Usage: wordhunt COMMAND DIRECTORY [OPTIONS] [WORD-LIST]");

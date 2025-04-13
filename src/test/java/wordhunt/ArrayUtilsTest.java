@@ -1,9 +1,11 @@
 package wordhunt;
 
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import wordhunt.utils.ArrayUtils;
 
 class ArrayUtilsTest {
 

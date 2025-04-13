@@ -30,22 +30,12 @@ public class BasicSearchConsumer implements SearchConsumer {
     private final DocumentStorage documentStorage;
     private final Consumer<String> searchOutput;
 
-    public BasicSearchConsumer(SearchConfig config, DocumentStorage documentStorage, Consumer<String> searchOutput) {
+    public BasicSearchConsumer(SearchConfig config, DocumentStorage aDocumentStorage, Consumer<String> aSearchOutput) {
         this.formatAsListing = Boolean.TRUE.equals(config.getValue(SearchConst.CFG_SEARCH_BRIEF));
-        this.documentStorage = documentStorage;
-        this.searchOutput = searchOutput;
+        this.documentStorage = aDocumentStorage;
+        this.searchOutput = aSearchOutput;
     }
     
-    /**
-     * Create a BasicSearchConsumer with default logging behavior
-     * 
-     * @param config Search configuration
-     * @param documentStorage Document storage to use
-     */
-    public BasicSearchConsumer(SearchConfig config, DocumentStorage documentStorage) {
-        this(config, documentStorage, LoggerService::logSearchResult);
-    }
-
     @Override
     public void handle(String absolutePath) {
         if (documentStorage.documentExists(absolutePath)) {

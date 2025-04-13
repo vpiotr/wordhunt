@@ -31,11 +31,11 @@ public class IndexedDocumentSearcher implements DocumentSearcher {
     private final DocumentStorage documentStorage;
     private final Consumer<String> searchOutput;
 
-    public IndexedDocumentSearcher(SearchConfig config, IndexWalkerFactory indexWalkerFactory, DocumentStorage documentStorage, Consumer<String> searchOutput) {
-        this.config = config;
-        this.indexWalkerFactory = indexWalkerFactory;
-        this.documentStorage = documentStorage;
-        this.searchOutput = searchOutput;
+    public IndexedDocumentSearcher(SearchConfig aConfig, IndexWalkerFactory aIndexWalkerFactory, DocumentStorage aDocumentStorage, Consumer<String> aSearchOutput) {
+        this.config = aConfig;
+        this.indexWalkerFactory = aIndexWalkerFactory;
+        this.documentStorage = aDocumentStorage;
+        this.searchOutput = aSearchOutput;
     }
 
     @Override

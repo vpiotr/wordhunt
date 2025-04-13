@@ -2,3 +2,4 @@ target
 backup
 checkstyle.xml
 .vscode/settings.json
+logs

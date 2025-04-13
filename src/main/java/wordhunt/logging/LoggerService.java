@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 public class LoggerService {
     
     private final Logger logger;
-    private static final Logger searchResultsLogger = LoggerFactory.getLogger("wordhunt.results");
     
     /**
      * Create a logger for the specified class
@@ -130,15 +129,6 @@ public class LoggerService {
      */
     public void error(String message, Throwable throwable) {
         logger.error(message, throwable);
-    }
-    
-    /**
-     * Log a search result which will be formatted clearly for end-users
-     * 
-     * @param message The search result message
-     */
-    public static void logSearchResult(String message) {
-        searchResultsLogger.info(message);
     }
     
     /**

@@ -13,12 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package wordhunt;
+package wordhunt.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+
+import wordhunt.SearchException;
 
 /**
  * File-related utility functions.
@@ -26,6 +28,9 @@ import java.util.Arrays;
  * @author piotr
  */
 public final class FileUtils {
+
+    private FileUtils() {
+    }
 
     /**
      * Read part of file as byte array.
@@ -61,6 +66,4 @@ public final class FileUtils {
         }
     }
 
-    private FileUtils() {
-    }
 }

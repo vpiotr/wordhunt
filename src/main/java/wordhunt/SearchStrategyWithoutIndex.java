@@ -5,9 +5,9 @@ class SearchStrategyWithoutIndex {
     private final SearchConfig config;
     private final ProcessLog processLog;
 
-    SearchStrategyWithoutIndex(SearchConfig config, ProcessLog processLog) {
-        this.config = config;
-        this.processLog = processLog;
+    SearchStrategyWithoutIndex(SearchConfig aConfig, ProcessLog aProcessLog) {
+        this.config = aConfig;
+        this.processLog = aProcessLog;
     }
 
     public void invoke(SearchTerms searchTerms) {

@@ -27,11 +27,11 @@ public class FoundDocument {
     private final String mimeType;
     private final String charsetName;
 
-    public FoundDocument(String filePath, boolean isDirectory, String mimeType, String charsetName) {
-        this.filePath = filePath;
-        this.isDirectory = isDirectory;
-        this.mimeType = mimeType;
-        this.charsetName = charsetName;
+    public FoundDocument(String aFilePath, boolean aIsDirectory, String aMimeType, String aCharsetName) {
+        this.filePath = aFilePath;
+        this.isDirectory = aIsDirectory;
+        this.mimeType = aMimeType;
+        this.charsetName = aCharsetName;
     }
 
     public String getFilePath() {

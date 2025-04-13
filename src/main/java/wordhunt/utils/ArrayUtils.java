@@ -13,9 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package wordhunt;
+package wordhunt.utils;
 
 import java.util.Arrays;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 
 /**
  * Utility functions for arrays.
@@ -24,6 +26,9 @@ import java.util.Arrays;
  */
 public final class ArrayUtils {
 
+    private ArrayUtils() {
+    }
+
     /**
      * Joins two arrays into a new one.
      *
@@ -31,6 +36,7 @@ public final class ArrayUtils {
      * @param second second array
      * @return joined arrays or null if both are null.
      */
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
     public static <T> T[] merge(T[] first, T[] second) {
         // If both arrays are null, return null
         if (first == null && second == null) {
@@ -51,6 +57,4 @@ public final class ArrayUtils {
         return result;
     }
 
-    private ArrayUtils() {
-    }
 }

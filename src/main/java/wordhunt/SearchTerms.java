@@ -33,15 +33,15 @@ public final class SearchTerms {
     private final String[] pathWords;
     private final String[] contentWords;
 
-    public static SearchTermsBuilder builder() {
-        return new SearchTermsBuilder();
+    private SearchTerms(String[] aAnyWords, String[] aFileWords, String[] aPathWords, String[] aContentWords) {
+        this.anyWords = acceptWords(aAnyWords);
+        this.fileWords = acceptWords(aFileWords);
+        this.pathWords = acceptWords(aPathWords);
+        this.contentWords = acceptWords(aContentWords);
     }
 
-    private SearchTerms(String[] anyWords, String[] fileWords, String[] pathWords, String[] contentWords) {
-        this.anyWords = acceptWords(anyWords);
-        this.fileWords = acceptWords(fileWords);
-        this.pathWords = acceptWords(pathWords);
-        this.contentWords = acceptWords(contentWords);
+    public static SearchTermsBuilder builder() {
+        return new SearchTermsBuilder();
     }
 
     public String[] getAnyWords() {
@@ -72,11 +72,11 @@ public final class SearchTerms {
 
         private Map<String, String[]> terms = new HashMap<>();
 
-        SearchTermsBuilder terms(Map<String, String[]> terms) {
+        SearchTermsBuilder terms(Map<String, String[]> aNewTerms) {
             this.terms = new HashMap<>();
 
-            if (terms != null) {
-                this.terms.putAll(terms);
+            if (aNewTerms != null) {
+                this.terms.putAll(aNewTerms);
             }
 
             return this;

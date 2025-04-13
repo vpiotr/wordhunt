@@ -25,9 +25,9 @@ public class IndexValidator {
     private final SearchConfig config;
     private final IndexStorage indexStorage;
 
-    public IndexValidator(SearchConfig config, IndexStorage indexStorage) {
-        this.config = config;
-        this.indexStorage = indexStorage;
+    public IndexValidator(SearchConfig aConfig, IndexStorage aIndexStorage) {
+        this.config = aConfig;
+        this.indexStorage = aIndexStorage;
     }
 
     public boolean indexExists() {

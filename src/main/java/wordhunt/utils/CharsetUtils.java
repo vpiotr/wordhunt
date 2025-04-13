@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package wordhunt;
+package wordhunt.utils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -27,6 +27,9 @@ public final class CharsetUtils {
 
     private static final String CHARSET_UTF8 = "UTF-8";
     private static final String DEFAULT_CHARSET = "US-ASCII";
+
+    private CharsetUtils() {
+    }
 
     public static String detectCharsetName(byte[] data) {
         return isValidUtf8(data) ? CHARSET_UTF8 : DEFAULT_CHARSET;
@@ -47,6 +50,4 @@ public final class CharsetUtils {
         }
     }
 
-    private CharsetUtils() {
-    }
 }

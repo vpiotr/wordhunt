@@ -32,8 +32,8 @@ public class BasicIndexWalker implements IndexWalker {
 
     private String bufferedLine;
 
-    public BasicIndexWalker(BufferedReader reader) {
-        this.reader = reader;
+    public BasicIndexWalker(BufferedReader aReader) {
+        this.reader = aReader;
     }
 
     @Override

@@ -22,6 +22,9 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import wordhunt.utils.ArrayUtils;
+import wordhunt.utils.MimeUtils;
+
 /**
  * Checks if file contains in its body required words.
  * @author piotr
@@ -33,14 +36,14 @@ public class FileContentMatcher extends BaseFileMatcher {
     private final FileTypeDetector fileTypeDetector;
     private final DocumentStorage documentStorage;
 
-    public FileContentMatcher(SearchConfig config, FileTypeDetector fileTypeDetector, DocumentStorage documentStorage) {
-        this(config, null, fileTypeDetector, documentStorage);
+    public FileContentMatcher(SearchConfig config, FileTypeDetector aFileTypeDetector, DocumentStorage aDocumentStorage) {
+        this(config, null, aFileTypeDetector, aDocumentStorage);
     }
 
-    public FileContentMatcher(SearchConfig config, SearchMatcher nextMatcher, FileTypeDetector fileTypeDetector, DocumentStorage documentStorage) {
+    public FileContentMatcher(SearchConfig config, SearchMatcher nextMatcher, FileTypeDetector aFileTypeDetector, DocumentStorage aDocumentStorage) {
         super(config, nextMatcher);
-        this.fileTypeDetector = fileTypeDetector;
-        this.documentStorage = documentStorage;
+        this.fileTypeDetector = aFileTypeDetector;
+        this.documentStorage = aDocumentStorage;
     }
 
     @Override
@@ -71,19 +74,13 @@ public class FileContentMatcher extends BaseFileMatcher {
         var absolutePath = buildEntryAbsolutePath(filePath);
         var documentInfo = documentStorage.getDocumentInfo(absolutePath);
 
-        // Fast fail conditions
-        if (documentInfo.isDirectory() || !documentInfo.documentExists() || 
-            !documentInfo.isReadable() || wordsLeftForContent.length == 0) {
-
-            // No words to check or can't check the document
-            if ((documentInfo.isDirectory() && !isIncludeDirsEnabled()) ||
-                !documentInfo.documentExists() ||
-                !documentInfo.isReadable() ||
-                (wordsLeftForContent.length > 0)) {
-                return Boolean.FALSE;
-            }
-
-            return nextMatcherResult(entry, context, Boolean.TRUE);
+        if (documentInfo.isDirectory()) {
+            return handleDirectory(entry, context, acceptedStatus);
+        }
+    
+        var readableFile = documentInfo.isReadable() && documentInfo.documentExists();
+        if (!readableFile) {
+            return handleUnreadableFile(entry, context, acceptedStatus, wordsLeftForContent.length > 0);
         }
 
         // Can't read the content with current charset
@@ -103,6 +100,26 @@ public class FileContentMatcher extends BaseFileMatcher {
         return nextMatcherResult(entry, context, Boolean.TRUE);
     }
 
+
+    private Boolean handleDirectory(FoundDocument entry, SearchContext context, Boolean acceptedStatus) {
+        if (!isIncludeDirsEnabled()) {
+            return Boolean.FALSE;
+        }
+
+        return nextMatcherResult(entry, context, Boolean.TRUE);
+    }
+
+
+    private Boolean handleUnreadableFile(FoundDocument entry, SearchContext context, Boolean acceptedStatus, boolean wordsLeft) {
+        if (wordsLeft) {
+            // File is not readable and there are words to check
+            return Boolean.FALSE;
+        } else {
+            // File is not readable but no words to check
+            return nextMatcherResult(entry, context, Boolean.TRUE);
+        }
+}
+    
     @Override
     public Boolean isMatching(String absolutePath, boolean isDirectory, SearchContext context, Boolean acceptedStatus) {
         var relative = FilePathUtils.absoluteToRelativePath(absolutePath, getSearchRootDir());

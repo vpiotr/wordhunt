@@ -38,7 +38,22 @@ Example of usage:
   java -jar ./wordhunt.jar --find . basic search java
   
 -> performs the same without usage of shell scripting.  
-  
+
+Static Code Analysis
+------------------
+The project includes static code analysis tools to improve code quality:
+
+1. SpotBugs - A static analysis tool to find bugs in Java code
+   ```
+   mvn spotbugs:check       # Run SpotBugs analysis
+   mvn spotbugs:gui         # View SpotBugs results in GUI
+   ```
+
+Run SpotBugs along with compilation and tests:
+```
+mvn verify
+```
+
 Syntax
 --------------------
 Usage: `wordhunt COMMAND DIRECTORY [OPTIONS] [WORD-LIST]`
