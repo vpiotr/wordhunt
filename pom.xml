@@ -170,7 +170,7 @@
         <version>${checkstyle.version}</version>
         <configuration>
           <consoleOutput>true</consoleOutput>
-          <encoding>UTF-8</encoding>
+          <inputEncoding>UTF-8</inputEncoding>
           <configLocation>checkstyle.xml</configLocation>
           <violationSeverity>info</violationSeverity>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
