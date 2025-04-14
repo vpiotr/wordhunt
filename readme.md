@@ -1,3 +1,5 @@
+[![Build and Test](https://github.com/vpiotr/wordhunt/actions/workflows/build.yml/badge.svg)](https://github.com/vpiotr/wordhunt/actions/workflows/build.yml)
+
 About wordhunt
 --------------------
 Wordhunt is a word search utility, finds files in local file system using word queries like Internet search engine.
